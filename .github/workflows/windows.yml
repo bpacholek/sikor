@@ -25,8 +25,8 @@ jobs:
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: out/Sikor
+        file: out/Sikor.exe
         tag: ${{ github.ref }}
-        asset_name: Sikor-Win-x64
+        asset_name: Sikor-Win-x64.exe
         overwrite: true
         file_glob: false
