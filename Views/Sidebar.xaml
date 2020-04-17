@@ -1,0 +1,54 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
+             
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Sikor.Views.Sidebar">
+  <UserControl.DataContext>
+    <vm:Sidebar/>
+  </UserControl.DataContext>
+  <DockPanel LastChildFill="True" VerticalAlignment="Stretch">
+    <Border  
+      Background="#6c51a4"
+      BorderBrush="Black"
+      BorderThickness="0 0 1 0"
+      Padding="4">
+      <DockPanel LastChildFill="True" VerticalAlignment="Stretch">
+        <ComboBox DockPanel.Dock="Top" Padding="4" Background="#ffffff" Items="{Binding ProfileProjects}" Name="ProfileProjects" SelectedItem="{Binding SelectedProject}"></ComboBox>
+        <CheckBox DockPanel.Dock="Top" Padding="4" Background="#ffffff" IsChecked="{Binding IssueSearchOnlyMyIssues}">
+          <TextBlock Foreground="#ffffff">Only assigned to me</TextBlock>
+        </CheckBox>
+        <ComboBox DockPanel.Dock="Top" Padding="4" Name="SortOptions" Background="#ffffff" SelectedItem="{Binding SelectedSorting}" Items="{Binding SortOptions}">
+        </ComboBox>
+        <ListBox DockPanel.Dock="Top" Name="IssueStatuses" Items="{Binding IssueStatuses, Mode=TwoWay}">
+          <ListBox.ItemTemplate>
+            <DataTemplate SupportsRecycling="True">
+              <CheckBox DockPanel.Dock="Top" Content="{Binding Path=Item.Selected}"  IsChecked="{Binding Selected, Mode=TwoWay}">
+                <TextBlock Text="{Binding Name}"></TextBlock>
+              </CheckBox>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBox DockPanel.Dock="Top" Text="{Binding IssueSearchText, Mode=TwoWay}"></TextBox>
+        <ListBox  DockPanel.Dock="Top" SelectionMode="Single" VerticalAlignment="Stretch" ClipToBounds="True" Name="Issues" SelectedItem="{Binding SelectedIssue, Mode=TwoWay}" Items="{Binding Issues}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" UseLayoutRounding="True">
+          <ListBox.ItemTemplate>
+            <DataTemplate SupportsRecycling="True">
+              <Border BorderBrush="#6c51a4" BorderThickness="4 0 0 0" >
+                <StackPanel Margin="4 0 0 0" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                  <TextBlock TextWrapping="Wrap" VerticalAlignment="Stretch" FontWeight="Bold" Text="{Binding Name}"></TextBlock>
+                  <DockPanel  HorizontalAlignment="Stretch">
+                    <TextBlock DockPanel.Dock="Left" Foreground="#6c51a4" FontWeight="Bold" Text="{Binding Key}"></TextBlock>
+
+                    <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text="{Binding Status}"></TextBlock>
+                  </DockPanel>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+  </DockPanel>
+</UserControl>

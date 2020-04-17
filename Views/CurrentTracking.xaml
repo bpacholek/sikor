@@ -1,0 +1,228 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
+             
+             x:Class="Sikor.Views.CurrentTracking">
+  <UserControl.DataContext>
+    <vm:CurrentTrackingViewModel/>
+  </UserControl.DataContext>
+  <DockPanel>
+    <Border
+    Background="#ffffff"
+    BorderBrush="Black"
+    BorderThickness="0"
+    Padding="4">
+      <StackPanel Orientation="Vertical" Background="#ffffff">
+        <Border IsVisible="{Binding IsTracking}"
+        Background="#6c51a4"
+        BorderBrush="Black"
+        BorderThickness="1"
+        Padding="4">
+          <StackPanel Orientation="Vertical"  Background="#ffffff">
+            <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Current Tracking</TextBlock>
+            <StackPanel Orientation="Vertical">
+              <Grid ColumnDefinitions="150, 200, *, 150" RowDefinitions="*,*,*,*,*,*,*,*" Margin="5">
+                <TextBlock Grid.Column="0" Grid.Row="0">Issue:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="1">Project:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="2">Status:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="3">Tracking since:</TextBlock>
+                <TextBlock Grid.Column="0" Classes="accented" Grid.Row="4">Tracking time:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="5">Comment:</TextBlock>
+
+                <TextBlock Grid.Column="1" Grid.Row="0" Name="TrackedIssue_Name" Text="{Binding TrackedIssue.Name}"></TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" Name="TrackedIssue_Project" Text="{Binding TrackedIssue.Project}"></TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="2" Name="TrackedIssue_Status" Text="{Binding TrackedIssue.Status}"></TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="3" Name="TrackedIssue_Created" Text="{Binding TrackedIssue.Created}"></TextBlock>
+                <TextBlock Grid.Column="1" Classes="accented" Grid.Row="4" Name="TrackingTime" Text="{Binding TrackingTime}"></TextBlock>
+                <TextBox Grid.Column="1" Grid.Row="5" Name="TrackedIssue_Comment" Text="{Binding TrackedIssue.Comment, Mode=TwoWay}"></TextBox>
+
+                <Button Grid.RowSpan="6" Grid.Column="3" Grid.Row="0" Command="{Binding StoreTracking}">
+                  <StackPanel Orientation="Vertical">
+                    <Image Source="avares://Sikor/Assets/save-solid.png" Width="24" Height="24" Margin="5"></Image>
+                    <TextBlock>Stop and save tracking</TextBlock>
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="6" Grid.Row="6" Margin="0 5 0 0" Command="{Binding CancelTracking}">Cancel</Button>
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <Border Margin="0 5 0 0"
+        Background="#6c51a4"
+        BorderBrush="Black"
+        BorderThickness="1"
+        Padding="4">
+          <StackPanel Orientation="Vertical"  Background="#ffffff">
+            <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Selected issue</TextBlock>
+            <StackPanel IsVisible="{Binding !IsSelected}" Orientation="Vertical" VerticalAlignment="Stretch">
+              <Image
+            Source="avares://Sikor/Assets/stream-solid.png"
+            Width="32"
+            Height="32"
+            Margin="25"
+             />
+              <TextBlock Text="Please select an issue in the sidebar on the left!" HorizontalAlignment="Center" Margin="0 0 0 25" />
+            </StackPanel>
+            <StackPanel IsVisible="{Binding IsSelected}" Orientation="Vertical">
+              <Grid ColumnDefinitions="150, 200, 100, *, 150" RowDefinitions="*,*,*,*,*" Margin="5">
+                <TextBlock Grid.Column="0" Grid.Row="0">Issue:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="1">Project:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="2">Status:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding SelectedIssue.Name}"></TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedIssue.Project}"></TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding SelectedIssue.Status}"></TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="3">Change status to:</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="3" Name="IssueStatuses" Items="{Binding IssueStatuses}" SelectedItem="{Binding SelectedNewStatus}"></ComboBox>
+                <Button Grid.Column="2" Grid.Row="3" Command="{Binding SetStatus}">Set</Button>
+
+                <Button Grid.Column="4" Grid.Row="0" Grid.RowSpan="4" Command="{Binding StartTracking}">
+                  <StackPanel Orientation="Vertical">
+                    <Image Source="avares://Sikor/Assets/play-circle-regular.png" Width="24" Height="24" Margin="5"></Image>
+                    <TextBlock>Start tracking</TextBlock>  
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Margin="0 5 0 0"
+          Background="#6c51a4"
+          BorderBrush="Black"
+          BorderThickness="1"
+          IsVisible="{Binding HasFailedWorklogs}"
+          Padding="4">
+          <StackPanel Orientation="Vertical"  Background="#ffffff">
+            <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Failed worklogs</TextBlock>
+            <DockPanel LastChildFill="True">
+              <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+                <Button Command="{Binding RetryFailedWorklog}" Margin="0 5 0 5">
+                  <StackPanel Orientation="Horizontal">
+                    <Image Source="avares://Sikor/Assets/save-solid.png" Width="16" Height="16" Margin="4"></Image>
+                    <TextBlock VerticalAlignment="Center">Retry</TextBlock>
+                  </StackPanel>
+                </Button>
+                <Button Command="{Binding RemoveFailedWorklog}" Margin="5">
+                  <StackPanel Orientation="Horizontal">
+                    <Image Source="avares://Sikor/Assets/trash-alt-solid.png" Width="16" Height="16" Margin="4"></Image>
+                    <TextBlock VerticalAlignment="Center">Remove</TextBlock>
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+              <ListBox VerticalAlignment="Stretch" Height="240" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Name="FailedWorklogsList" SelectedIndex="{Binding SelectedFailedWorklogIndex, Mode=TwoWay}" SelectedItem="{Binding SelectedFailedWorklog, Mode=TwoWay}" Items="{Binding FailedWorklogs}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                  <DataTemplate SupportsRecycling="True">
+                    <Border BorderBrush="#6c51a4" BorderThickness="4 0 0 0" >
+                      <StackPanel Margin="4 0 0 0" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <DockPanel HorizontalAlignment="Stretch">
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text="{Binding To}"></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text=" - "></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text="{Binding Created}"></TextBlock>
+                          <TextBlock TextWrapping="Wrap" VerticalAlignment="Stretch" TextAlignment="Left" FontWeight="Bold" Text="{Binding Summary}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel  HorizontalAlignment="Stretch">
+                          <TextBlock DockPanel.Dock="Left" Foreground="#6c51a4" FontWeight="Bold" Text="{Binding IssueKey}"></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Margin="0 0 5 0" Text="{Binding Duration}"></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Margin="0 0 5 0" Text="Time:"></TextBlock>
+                        </DockPanel>
+                        <DockPanel  HorizontalAlignment="Stretch">
+                          <TextBlock DockPanel.Dock="Left" Foreground="#6c51a4" FontWeight="Bold" Text="{Binding Comment}"></TextBlock>
+                        </DockPanel>
+                        <TextBlock ></TextBlock>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+          </StackPanel>
+        </Border>
+        
+        <Border Margin="0 5 0 0"
+          Background="#6c51a4"
+          BorderBrush="Black"
+          BorderThickness="1"
+          IsVisible="{Binding HasFailedStatuses}"
+          Padding="4">
+          <StackPanel Orientation="Vertical"  Background="#ffffff">
+            <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Failed status updates</TextBlock>
+            <DockPanel LastChildFill="True">
+              <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+                <Button Command="{Binding RetryFailedStatus}" Margin="0 5 0 5">
+                  <StackPanel Orientation="Horizontal">
+                    <Image Source="avares://Sikor/Assets/save-solid.png" Width="16" Height="16" Margin="4"></Image>
+                    <TextBlock VerticalAlignment="Center">Retry</TextBlock>
+                  </StackPanel>
+                </Button>
+                <Button Command="{Binding RemoveFailedStatus}" Margin="5">
+                  <StackPanel Orientation="Horizontal">
+                    <Image Source="avares://Sikor/Assets/trash-alt-solid.png" Width="16" Height="16" Margin="4"></Image>
+                    <TextBlock VerticalAlignment="Center">Remove</TextBlock>
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+              <ListBox VerticalAlignment="Stretch" Height="240" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Name="FailedStatusesList" SelectedIndex="{Binding SelectedFailedIndex, Mode=TwoWay}" SelectedItem="{Binding SelectedFailedStatus, Mode=TwoWay}" Items="{Binding FailedStatuses}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                  <DataTemplate SupportsRecycling="True">
+                    <Border BorderBrush="#6c51a4" BorderThickness="4 0 0 0" >
+                      <StackPanel Margin="4 0 0 0" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <DockPanel HorizontalAlignment="Stretch">
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text="{Binding Created}"></TextBlock>
+                          <TextBlock TextWrapping="Wrap" VerticalAlignment="Stretch" TextAlignment="Left" FontWeight="Bold" Text="{Binding Summary}"></TextBlock>
+                        </DockPanel>
+                        <DockPanel  HorizontalAlignment="Stretch">
+                          <TextBlock DockPanel.Dock="Left" Foreground="#6c51a4" FontWeight="Bold" Text="{Binding IssueKey}"></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" FontWeight="Bold" TextAlignment="Right" Margin="0 0 0 0" Text="{Binding Status}"></TextBlock>
+                          <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Margin="0 0 5 0" Text="New status:"></TextBlock>
+                        </DockPanel>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Margin="0 5 0 0"
+      Background="#6c51a4"
+      BorderBrush="Black"
+      BorderThickness="1"
+      Padding="4">
+          <StackPanel Orientation="Vertical"  Background="#ffffff">
+            <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Information</TextBlock>
+            <DockPanel LastChildFill="True">
+              <Grid ColumnDefinitions="200, *, 200, 200" RowDefinitions="*" Margin="5">
+
+                <TextBlock TextWrapping="Wrap" >This application is provided without any warranty under GPL 3.0 license by IDCT Bartosz Pachołek.</TextBlock>
+
+                <Button Grid.Column="2" Grid.Row="0"  Command="{Binding OpenFontAwesome}" Margin="0 0 5 0">
+                  <StackPanel Orientation="Vertical">
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Sikor uses contents provided</TextBlock>
+                    <Image HorizontalAlignment="Center" Source="avares://Sikor/Assets/font-awesome-brands.png" Width="24" Height="24" Margin="5"></Image>
+                    <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" >by FontAwesome under its license</TextBlock>
+                  </StackPanel>
+                </Button>
+
+                <Button Grid.Column="3" Grid.Row="0" Command="{Binding OpenMantis}">
+                  <StackPanel Orientation="Vertical">
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Found a bug?</TextBlock>
+                    <Image HorizontalAlignment="Center" Source="avares://Sikor/Assets/bug-solid.png" Width="24" Height="24" Margin="5"></Image>
+                    <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" >Report it in Mantis BT</TextBlock>
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </DockPanel>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </Border>
+
+
+
+  </DockPanel>
+</UserControl>
