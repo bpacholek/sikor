@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet publish Sikor.csproj --configuration Linux --framework netcoreapp3.1 --self-contained true --runtime linux-x64 /p:PublishSingleFile=true --output out
     - name: Test
-      run: dotnet out/Sikor --runt-test
+      run: chmox +x out/Sikor && out/Sikor --run-test
