@@ -1,0 +1,39 @@
+on:
+  push:
+    tags:
+    - '*'
+
+name: Create Release (MacOS)
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      # Runs a single command using the runners shell
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet publish Sikor.csproj --configuration Release --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
+
+      - name: Test Run
+        run: dotnet out/Sikor --run-test
+
+      - uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "out/Sikor"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+      #- name: Upload binaries to release
+      #  uses: svenstaro/upload-release-action@v1-release
+      #  with:
+      #    repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #    file: release/Chronos*
+      #    tag: ${{ github.ref }}
+      #    overwrite: true
+      #    file_glob: true
