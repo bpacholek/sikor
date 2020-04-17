@@ -1,39 +1,34 @@
+name: OSX Build
+
 on:
   push:
-    tags:
-    - '*'
-
-name: Create Release (MacOS)
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
-    name: Create Release
+
     runs-on: macos-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      # Runs a single command using the runners shell
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet publish Sikor.csproj --configuration Release --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
-
-      - name: Test Run
-        run: dotnet out/Sikor --run-test
-
-      - uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "out/Sikor"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-      #- name: Upload binaries to release
-      #  uses: svenstaro/upload-release-action@v1-release
-      #  with:
-      #    repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #    file: release/Chronos*
-      #    tag: ${{ github.ref }}
-      #    overwrite: true
-      #    file_glob: true
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish Sikor.csproj --configuration OSX --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
+    - name: Test
+      run: chmod +x out/Sikor && out/Sikor --run-test
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: out/Sikor
+        tag: ${{ github.ref }}
+        asset_name: Sikor-OSX-x64
+        overwrite: true
+        file_glob: false
