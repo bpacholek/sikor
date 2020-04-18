@@ -15,7 +15,7 @@ using MessageBox.Avalonia;
 using Sikor.Util;
 namespace Sikor.ViewModels
 {
-    public class Sidebar : ReactiveObject, IService
+    public class SidebarViewModel : ReactiveObject, IService
     {
         protected UserState userState;
 
@@ -45,8 +45,8 @@ namespace Sikor.ViewModels
         protected string searchString;
         public string IssueSearchText {
             get { return searchString; }
-            set { 
-                searchString = value; 
+            set {
+                searchString = value;
                 if (searchString.Length > 2)
                 {
                     search();

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace Sikor.Model
 {
@@ -14,13 +12,13 @@ namespace Sikor.Model
     {
         /**
          * <summary>
-         * Textual representation of a status.
+         * Textual representation of the new status.
          * </summary>
          * <todo>
          * Store a reference to an actual object.
          * </todo>
          * <value>Textual representation of a Jira status</value>
          */
-        public string Status { set; get; }
+        public string NewStatus { set; get; }
     }
 }

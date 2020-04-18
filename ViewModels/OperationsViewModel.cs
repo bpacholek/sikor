@@ -18,7 +18,7 @@ using System.Diagnostics;
 namespace Sikor.ViewModels
 {
 
-    public class CurrentTrackingViewModel : ReactiveObject, IService
+    public class OperationsViewModel : ReactiveObject, IService
     {
         public bool IsSelected { get; set; }
         public bool IsTracking

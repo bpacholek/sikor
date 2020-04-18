@@ -1,25 +1,31 @@
 ﻿using Sikor.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Sikor.Container;
+using Sikor.Model;
 
 namespace Sikor.Services
 {
-    public class UserState : IService
+    public class AppStateUpdater : ServiceProvider
     {
-        public Model.Profile UserProfile; 
-        public UserState()
+        #region references
+        private MainWindowViewModel MainWindow;
+        private SidebarViewModel Sidebar;
+        private OperationsViewModel Operations;
+
+        #endregion
+
+        public Profile ActiveProfile;
+
+        public override void Init()
         {
-            ServicesContainer.RegisterService("state", this);
+            MainWindow = ServiceContainer.GetServiceTyped<MainWindowViewModel>(typeof(MainWindowViewModel).GetType().ToString());
+            Sidebar = ServiceContainer.GetServiceTyped<SidebarViewModel>(typeof(SidebarViewModel).GetType().ToString());
+            Operations = ServiceContainer.GetServiceTyped<OperationsViewModel>(typeof(OperationsViewModel).GetType().ToString());
         }
 
-        public void Login(Model.Profile userProfile)
+        public void Login(Profile profile)
         {
-            UserProfile = userProfile;
-            var mainWindow = ServicesContainer.GetServiceTyped<MainWindowViewModel>("MainWindow");
-            var sidebar = ServicesContainer.GetServiceTyped<Sidebar>("sidebar");
+            ActiveProfile = profile;
             sidebar.Init();
-            var currentTracking = ServicesContainer.GetServiceTyped<CurrentTrackingViewModel>("current_tracking");
             currentTracking.init();
             mainWindow.LoginFormVisible = false;
         }

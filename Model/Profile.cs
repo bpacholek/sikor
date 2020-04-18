@@ -1,12 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Sikor.Util.Security;
+using Sikor.Repository;
 
 namespace Sikor.Model
 {
-
+    /**
+     * <summary>
+     * Represents a Profile which store access details, cached issues, stored
+     * for later failed worklogs or status update and details about current
+     * tracking process.
+     * </summary>
+     */
     [Serializable]
-    public class Profile
+    public class Profile : IStorable
     {
         /**
          * <summary>
@@ -51,23 +58,61 @@ namespace Sikor.Model
 
         /**
          * <summary>
-         * Cached list of issues user has access to, grouped by their full Jira
+         * Cached list of issues user has access to, identified by their full Jira
          * ids (with Jira project prefixes).
          * </summary>
          * <value>Dictionary of Issues by their identifiers (Jira Keys).</value>
          */
         public Dictionary<string, Issue> Issues { get; set; }
 
+        /**
+         * <summary>
+         * Cached list of statuses user has access to, identified by their Jira
+         * ids (usually numerical).
+         * </summary>
+         * <todo>
+         * Verify if key is always numerical
+         * </todo>
+         * <value>Dictionary of Statuses by their Jira keys (usually numerical)</value>
+         */
         public Dictionary<string, Status> Statuses { get; set; }
 
+        /**
+         * <summary>
+         * List of statuses which were not saved due to some issues: allows to
+         * save them again after solving the problem (network, credentials etc.)
+         * </summary>
+         * <value>List of FailedStatusUpdate</value>
+         */
         public List<FailedStatusUpdate> FailedStatusUpdates { get; }
+
+        /**
+         * <summary>
+         * List of failed worklog updates; whenever a network error etc. error
+         * occured then entry is stored for later.
+         * </summary>
+         * <value></value>
+         */
         public List<FailedWorklogUpdate> FailedWorklogs { get; }
 
-        public bool IsTracking { get; set; }
+        /**
+         * <summary>
+         * Answers the questions if Profile is currently in tracking state (has
+         * a tracking issue)
+         * </summary>
+         * <value>Boolean, true if profile is tracking time for an issue</value>
+         */
+        public bool IsTracking { get {
+           return CurrentTracking != null;
+        } }
 
-        public TrackingIssueItem TrackingIssue { get; set; }
-
-        public string TrackingComment { get; set; }
+        /**
+         * <summary>
+         * Current time-tracking process or null.
+         * </summary>
+         * <value>Tracking instance with comment and time</value>
+         */
+        public Tracking CurrentTracking { get; set; }
 
         public Profile()
         {
@@ -85,7 +130,7 @@ namespace Sikor.Model
          * </summary>
          * <returns>Md5 Hash</returns>
          */
-        public string GetUid()
+        public string GetId()
         {
             return HashGenerator.MD5(Name);
         }

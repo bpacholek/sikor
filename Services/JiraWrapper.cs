@@ -7,10 +7,11 @@ using Atlassian.Jira;
 using Newtonsoft.Json.Linq;
 using Sikor.Model;
 using Sikor.Repository;
+using Sikor.Container;
 
 namespace Sikor.Services
 {
-    public class JiraWrapper : IService
+    public class JiraWrapper : ServiceProvider
     {
         Jira jira;
 
@@ -44,9 +45,10 @@ namespace Sikor.Services
         public event LoginResponse onSuccessfulLogin;
         public event ValidationError onValidationError;
 
-        public JiraWrapper()
+        public override void Init()
         {
-            Profiles = ServicesContainer.GetServiceTyped<Profiles>("profiles");
+            Profiles = ServiceContainer.GetServiceTyped<Profiles>(typeof(Profiles).GetType().ToString());
+
         }
 
         async public Task<bool> StoreWorklog(string issueKey, DateTime start, DateTime end, string comment, bool retry = false)
@@ -109,7 +111,7 @@ namespace Sikor.Services
             {
                 if (retry)
                 {
-                    onStatusUpdateRetryFailed(issueKey, summary, status); 
+                    onStatusUpdateRetryFailed(issueKey, summary, status);
                 } else
                 {
                     onStatusUpdateFailed(issueKey, summary, status);
@@ -119,7 +121,7 @@ namespace Sikor.Services
 
             return true;
         }
- 
+
         async public Task<ObservableCollection<IssueItem>> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
         {
             try
@@ -187,7 +189,7 @@ namespace Sikor.Services
 
                     if (!item.Name.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        continue; 
+                        continue;
                     }
 
                     output.Add(item);
