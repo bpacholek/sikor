@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+using Sikor.Util.Security;
 
 namespace Sikor.Model
 {
@@ -9,22 +8,60 @@ namespace Sikor.Model
     [Serializable]
     public class Profile
     {
-        public string Host { get; set; }
+        /**
+         * <summary>
+         * Uri to the Jira instance: should include http or https.
+         * </summary>
+         * <value>Path to Jira instance.</value>
+         */
+        public string Uri { get; set; }
+
+        /**
+         * <summary>
+         * Username used to sign into Jira.
+         * </summary>
+         * <value>Jira Username</value>
+         */
         public string Username { get; set; }
 
+        /**
+        * <summary>
+        * Password used to sign into Jira.
+        * </summary>
+        * <value>Jira Password</value>
+        */
         public string Password { get; set; }
 
+        /**
+         * <summary>
+         * Profile name: will be used on the list of profiles.
+         * </summary>
+         * <value>Profile name</value>
+         */
         public string Name { get; set; }
 
-        public Dictionary<string, ListItem> Projects { get; set; }
+        /**
+         * <summary>
+         * Cached list of projects user has access to, grouped by shortcuts
+         * (ticket prefixes from Jira).
+         * </summary>
+         * <value>Dictionary of Projects by their respective shortcuts</value>
+         */
+        public Dictionary<string, Project> Projects { get; set; }
 
-        public Dictionary<string, IssueItem> Issues { get; set; }
+        /**
+         * <summary>
+         * Cached list of issues user has access to, grouped by their full Jira
+         * ids (with Jira project prefixes).
+         * </summary>
+         * <value>Dictionary of Issues by their identifiers (Jira Keys).</value>
+         */
+        public Dictionary<string, Issue> Issues { get; set; }
 
-        public Dictionary<string, IssueStatusItem> Statuses { get; set; }
+        public Dictionary<string, Status> Statuses { get; set; }
 
-        public List<FailedStatusUpdateOperation> FailedStatusUpdateOperations { get; }
-        public List<FailedWorklog> FailedWorklogs { get; }
-
+        public List<FailedStatusUpdate> FailedStatusUpdates { get; }
+        public List<FailedWorklogUpdate> FailedWorklogs { get; }
 
         public bool IsTracking { get; set; }
 
@@ -32,35 +69,25 @@ namespace Sikor.Model
 
         public string TrackingComment { get; set; }
 
-
         public Profile()
         {
-            Projects = new Dictionary<string, ListItem>();
-            Issues = new Dictionary<string, IssueItem>();
-            Statuses = new Dictionary<string, IssueStatusItem>();
-            FailedStatusUpdateOperations = new List<FailedStatusUpdateOperation>();
-            FailedWorklogs = new List<FailedWorklog>();
+            Projects = new Dictionary<string, Project>();
+            Issues = new Dictionary<string, Issue>();
+            Statuses = new Dictionary<string, Status>();
+            FailedStatusUpdates = new List<FailedStatusUpdate>();
+            FailedWorklogs = new List<FailedWorklogUpdate>();
         }
 
-        public static string CalculateMD5Hash(string input)
+        /**
+         * <summary>
+         * Gets the unique identifier of a Profile (which actually is just a
+         * hash of the name).
+         * </summary>
+         * <returns>Md5 Hash</returns>
+         */
+        public string GetUid()
         {
-            // step 1, calculate MD5 hash from input
-            MD5 md5 = System.Security.Cryptography.MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-
-            // step 2, convert byte array to hex string
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-            return sb.ToString();
-        }
-
-        public string GetId()
-        {
-            return CalculateMD5Hash(Name);
+            return HashGenerator.MD5(Name);
         }
 
     }

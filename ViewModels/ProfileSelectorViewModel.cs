@@ -12,7 +12,7 @@ using Sikor.Repository;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia;
-using Sikor.Util;
+using Sikor.Util.Ui;
 namespace Sikor.ViewModels
 {
     public class ProfileSelectorViewModel : ReactiveObject, IService

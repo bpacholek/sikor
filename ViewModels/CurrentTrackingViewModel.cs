@@ -11,7 +11,7 @@ using Sikor.Model;
 using Sikor.Repository;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-using Sikor.Util;
+using Sikor.Util.Ui;
 using System.Timers;
 using System.Diagnostics;
 
@@ -69,7 +69,7 @@ namespace Sikor.ViewModels
                     return;
                 }
             }
-        
+
             jira.StoreWorklog(TrackedIssue.Key, TrackedIssue.Created, DateTime.Now, TrackedIssue.Comment);
         }
 
@@ -485,7 +485,7 @@ namespace Sikor.ViewModels
                 this.RaisePropertyChanged("TrackedIssue_Name");
                 this.RaisePropertyChanged("IsTracking");
 
-                
+
             }
 
             Loader.Hide();
