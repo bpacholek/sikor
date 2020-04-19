@@ -93,7 +93,7 @@ namespace Sikor.Model
          * </summary>
          * <value></value>
          */
-        public List<FailedWorklogUpdate> FailedWorklogs { get; }
+        public List<Tracking> FailedWorklogs { get; }
 
         /**
          * <summary>
@@ -114,13 +114,15 @@ namespace Sikor.Model
          */
         public Tracking CurrentTracking { get; set; }
 
+        public Issue SelectedIssue { get; set; }
+
         public Profile()
         {
             Projects = new Dictionary<string, Project>();
             Issues = new Dictionary<string, Issue>();
             Statuses = new Dictionary<string, Status>();
             FailedStatusUpdates = new List<FailedStatusUpdate>();
-            FailedWorklogs = new List<FailedWorklogUpdate>();
+            FailedWorklogs = new List<Tracking>();
         }
 
         /**

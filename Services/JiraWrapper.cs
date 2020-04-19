@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading.Tasks;
-using Atlassian.Jira;
-using Newtonsoft.Json.Linq;
+using Jira = Atlassian.Jira.Jira;
+using JiraIssue = Atlassian.Jira.Issue;
+using JiraStatus = Atlassian.Jira.IssueStatus;
+using JiraProject = Atlassian.Jira.Project;
+using JiraWorklog = Atlassian.Jira.Worklog;
 using Sikor.Model;
 using Sikor.Repository;
+using System.Security.Authentication;
+using Sikor.Enum;
 using Sikor.Container;
+using Sikor.Util.Security;
 
 namespace Sikor.Services
 {
@@ -17,47 +22,38 @@ namespace Sikor.Services
 
         Profiles Profiles;
 
-        public delegate void LoginResponse();
+        Settings Settings;
 
-        public delegate void UpdateSuccessful(Issue issue);
-        public delegate void StatusUpdateFailed(string issueKey, string summary, string status);
-
-        public delegate void WorklogAdded(Issue issue);
-        public delegate void WorklogFailed(string issueKey, DateTime start, DateTime end, string comment);
-
-        public event WorklogAdded onWorklogAddedSuccessful;
-        public event WorklogAdded onWorklogRetryAddedSuccessful;
-
-        public event WorklogFailed onWorklogAddingFailed;
-        public event WorklogFailed onWorklogRetryAddingFailed;
-
-
-        public event StatusUpdateFailed onStatusUpdateFailed;
-        public event UpdateSuccessful onStatusUpdateSuccess;
-
-        public event StatusUpdateFailed onStatusUpdateRetryFailed;
-        public event UpdateSuccessful onStatusUpdateRetrySuccess;
-
-        public delegate void ValidationError(string message);
-
-        public event LoginResponse onInvalidCredentials;
-        public event LoginResponse onNetworkIssue;
-        public event LoginResponse onSuccessfulLogin;
-        public event ValidationError onValidationError;
+        AppState AppState;
 
         public override void Init()
         {
             Profiles = ServiceContainer.GetServiceTyped<Profiles>(typeof(Profiles).GetType().ToString());
-
+            Settings = ServiceContainer.GetServiceTyped<Settings>(typeof(Settings).GetType().ToString());
+            AppState = ServiceContainer.GetServiceTyped<AppState>(typeof(AppState).GetType().ToString());
         }
 
-        async public Task<bool> StoreWorklog(string issueKey, DateTime start, DateTime end, string comment, bool retry = false)
+        /**
+         * <summary>
+         * Stores the worklog
+         * </summary>
+         * <param name="issue"></param>
+         * <param name="start"></param>
+         * <param name="end"></param>
+         * <param name="comment"></param>
+         * <param name="saveOnFailure"></param>
+         * <returns></returns>
+         */
+        async public Task<bool> StoreWorklog(Tracking tracking, bool saveOnFailure = false)
         {
             try
             {
-                var issue = await jira.Issues.GetIssueAsync(issueKey);
+                if (tracking.To == default(DateTime)) {
+                    tracking.To = DateTime.Now;
+                }
 
-                double totalMinutes = Math.Round((end - start).TotalMinutes);
+                var jiraIssue = await jira.Issues.GetIssueAsync(tracking.IssueKey);
+                double totalMinutes = Math.Round((tracking.To - tracking.Created).TotalMinutes);
                 if (totalMinutes < 1)
                 {
                     totalMinutes = 1;
@@ -65,119 +61,113 @@ namespace Sikor.Services
 
                 string total = totalMinutes.ToString() + "m";
                 //total = "143m";
-                Worklog worklog = new Worklog(total, start, comment);
+                JiraWorklog worklog = new JiraWorklog(total, tracking.Created, tracking.Comment);
                 // add a worklog
-                await issue.AddWorklogAsync(worklog);
-                if (!retry)
-                {
-                    onWorklogAddedSuccessful(issue);
-                } else
-                {
-                    onWorklogRetryAddedSuccessful(issue);
-                }
+                await jiraIssue.AddWorklogAsync(worklog);
             }
             catch (Exception e)
             {
-                if (!retry)
+                if (!saveOnFailure)
                 {
-                    onWorklogAddingFailed(issueKey, start, end, comment);
+                    return false;
                 }
-                else
-                {
-                    onWorklogRetryAddingFailed(issueKey, start, end, comment);
-                }
+
+                AppState.ActiveProfile.FailedWorklogs.Add(tracking);
+                Profiles.Save();
             }
 
             return true;
 
         }
-        async public Task<bool> SetStatus(string issueKey, string summary, string status, bool retry = false)
+
+        /**
+         * <summary>
+         * Sets the new status for an issue or keeps it for later.
+         * </summary>
+         * <param name="issueKey"></param>
+         * <param name="summary"></param>
+         * <param name="status"></param>
+         * <param name="retry"></param>
+         * <returns></returns>
+         */
+        async public Task<bool> SetStatus(string issueKey, string summary, string status, bool saveOnFailure = false)
         {
             try
             {
                 var issue = await jira.Issues.GetIssueAsync(issueKey);
                 await issue.WorkflowTransitionAsync(status);
                 await issue.SaveChangesAsync();
-                if (retry)
-                {
-                    onStatusUpdateRetrySuccess(issue);
-                }
-                else
-                {
-                    onStatusUpdateSuccess(issue);
-                }
             }
             catch (Exception e)
             {
-                if (retry)
+                if (!saveOnFailure)
                 {
-                    onStatusUpdateRetryFailed(issueKey, summary, status);
-                } else
-                {
-                    onStatusUpdateFailed(issueKey, summary, status);
+                    return false;
                 }
-            }
 
+                var failedStatusOperation = new FailedStatusUpdate()
+                {
+                    Created = DateTime.Now,
+                    IssueKey = issueKey,
+                    Summary = summary,
+                    Status = status
+                };
+
+                AppState.ActiveProfile.FailedStatusUpdates.Add(failedStatusOperation);
+                Profiles.Save();
+            }
 
             return true;
         }
 
-        async public Task<ObservableCollection<IssueItem>> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
+        /**
+         * <summary>
+         * Attempts to perform a search requests, on any exception attempts to load from local cache.
+         * </summary>
+         * <param name="searchText"></param>
+         * <param name="sorting"></param>
+         * <param name="onlyCurrentUser"></param>
+         * <param name="projectKey"></param>
+         * <param name="statuses"></param>
+         * <param name="profile"></param>
+         * <returns></returns>
+         */
+        async public Task<ObservableCollection<Issue>> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
         {
             try
             {
-                string jql = "Summary ~ \"%" + searchText + "%\"";
-
-                if (onlyCurrentUser)
+                var SearchParams = new SearchSettings()
                 {
-                    jql += " && assignee = currentUser()";
-                }
+                    Summary = searchText,
+                    Sorting = sorting,
+                    AssignedToCurrentUser = onlyCurrentUser,
+                    Project = projectKey,
+                    Statuses = statuses
+                };
 
-                if (projectKey.Length > 0)
+                var results = await jira.Issues.GetIssuesFromJqlAsync(SearchParams.ToString());
+
+                var output = new ObservableCollection<Issue>();
+                foreach (JiraIssue issue in results)
                 {
-                    jql += " && project = " + projectKey;
-                }
-
-                if (statuses.Count > 0)
-                {
-                    jql += " && status in (\"" + String.Join("\",\"", statuses) + "\")";
-                }
-
-                if (sorting.Length > 0)
-                {
-                    jql += " ORDER BY " + sorting;
-                }
-
-
-                var results = await jira.Issues.GetIssuesFromJqlAsync(jql);
-
-                var output = new ObservableCollection<IssueItem>();
-                foreach (Issue issue in results)
-                {
-                    IssueItem item = new IssueItem();
+                    Issue item = new Issue();
                     item.Status = issue.Status.Name;
-                    item.Project = issue.Project;
+                    item.ProjectKey = issue.Project;
                     item.Key = issue.Key.Value;
-                    item.Name = issue.Summary;
+                    item.Value = issue.Summary;
                     output.Add(item);
                     profile.Issues[item.Key] = item;
                 }
 
                 return output;
             }
-            catch (System.Security.Authentication.AuthenticationException e)
-            {
-                onInvalidCredentials();
-                return new ObservableCollection<IssueItem>();
-            }
             catch (Exception e)
             {
-                //onNetworkIssue();
-                var output = new ObservableCollection<IssueItem>();
-                foreach (IssueItem item in profile.Issues.Values)
+                var output = new ObservableCollection<Issue>();
+                foreach (Issue item in profile.Issues.Values)
                 {
 
-                    if (projectKey.Length > 0 && item.Project != projectKey)
+                    if (projectKey.Length > 0 && item.ProjectKey != projectKey)
                     {
                         continue;
                     }
@@ -187,7 +177,7 @@ namespace Sikor.Services
                         continue;
                     }
 
-                    if (!item.Name.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
+                    if (!item.Value.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
                     {
                         continue;
                     }
@@ -200,185 +190,105 @@ namespace Sikor.Services
 
         }
 
-        async public Task<bool> CreateProfile(string profileName, string hostname, string username, string password)
+        /**
+         * <summary>
+         * Attempts to create a new profile.
+         * </summary>
+         * <param name="profileName"></param>
+         * <param name="url"></param>
+         * <param name="username"></param>
+         * <param name="password"></param>
+         * <returns></returns>
+         */
+        async public Task<LoginState> CreateProfile(string profileName, string url, string username, string password)
         {
-            JiraRestClientSettings settings = new JiraRestClientSettings();
-            Uri uri;
-
             if (profileName.Length == 0)
             {
-                onValidationError("Profile name must a non-empty string.");
-                return false;
+                throw new ArgumentException("Profile name must a non-empty string.");
             }
 
-            if (Profiles.Has(Profile.CalculateMD5Hash(profileName)))
+            if (Profiles.Has(HashGenerator.MD5(profileName)))
             {
-                onValidationError("Profile with such name already exists.");
-                return false;
+                throw new ArgumentException("Profile with such name already exists.");
             }
 
-            if (!Uri.TryCreate(hostname, UriKind.Absolute, out uri))
+            Uri uri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
             {
-                onValidationError("Invalid URL format. Please use full URL starting with http or https.");
-                return false;
+                throw new ArgumentException("Invalid URL format. Please use full URL starting with http or https.");
             }
 
             if (username.Length == 0 || password.Length == 0)
             {
-                onValidationError("Password and username must not be empty.");
-                return false;
+                throw new ArgumentException("Password and username must not be empty.");
             }
 
-            jira = Jira.CreateRestClient(hostname, username, password);
-            Profile profile = new Profile();
+            var profile = new Profile() {
+                Name = profileName,
+                Password = password,
+                Uri = url,
+                Username = username
+            };
 
+            LoginState loginResult = await Login(profile);
+
+            if (loginResult == LoginState.SUCCESS) {
+                Profiles.Add(profile);
+                Profiles.Save();
+
+                Settings.LastSelectedProfile = profile.GetId();
+                Settings.Save();
+            }
+
+            return loginResult;
+        }
+
+        async public Task<LoginState> Login(Profile profile)
+        {
+            //opens new connection
+            jira = Jira.CreateRestClient( profile.Uri, profile.Username, profile.Password);
             jira.RestClient.RestSharpClient.Timeout = 3000;
             try
             {
+                //tries to load projects
                 var projects = await jira.Projects.GetProjectsAsync();
                 profile.Projects.Clear();
-                foreach (Project project in projects)
+                foreach (JiraProject project in projects)
                 {
-                    var newProject = new ListItem();
+                    var newProject = new Project();
                     newProject.Key = project.Key;
-                    newProject.Name = project.Name;
                     newProject.Value = project.Name;
                     profile.Projects.Add(project.Id, newProject);
                 }
 
+                //attempt to load statuses possible in the jira
                 var statuses = await jira.Statuses.GetStatusesAsync();
                 profile.Statuses.Clear();
-                foreach (IssueStatus status in statuses)
+                foreach (JiraStatus status in statuses)
                 {
-                    var issueStatusItem = new IssueStatusItem();
+                    var issueStatusItem = new Status();
                     issueStatusItem.Key = status.Name;
-                    issueStatusItem.Name = status.Name;
                     issueStatusItem.Value = status.Name;
                     profile.Statuses.Add(status.Id, issueStatusItem);
                 }
             }
-            catch (System.Security.Authentication.AuthenticationException e)
+            catch (AuthenticationException e)
             {
-                onInvalidCredentials();
-                return false;
+                return LoginState.INVALID_CREDENTIALS;
             }
             catch (Exception e)
             {
-                onNetworkIssue();
-                return false;
+                return LoginState.NETWORK_ERROR;
             }
 
-            profile.Name = profileName;
-            profile.Password = password;
-            profile.Host = hostname;
-            profile.Username = username;
-
-            Profiles.Add(profile);
+            //store any updates to the profile
             Profiles.Save();
 
-            var appSettings = ServicesContainer.GetServiceTyped<Settings>("settings");
+            //mark the last selected profile in settings
+            Settings.LastSelectedProfile = profile.GetId();
+            Settings.Save();
 
-            appSettings.LastSelectedProfile = profile.GetId();
-            appSettings.Save();
-            onSuccessfulLogin();
-            return true;
-        }
-
-        async public Task<bool> AtteptLogin(Profile profile)
-        {
-            JiraRestClientSettings settings = new JiraRestClientSettings();
-
-            jira = Jira.CreateRestClient( profile.Host, profile.Username, profile.Password, settings );
-
-            ServicesContainer.RegisterService("signed_jira", this);
-            jira.RestClient.RestSharpClient.Timeout = 3000;
-            try
-            {
-                var projects = await jira.Projects.GetProjectsAsync();
-                profile.Projects.Clear();
-                foreach (Project project in projects)
-                {
-                    var newProject = new ListItem();
-                    newProject.Key = project.Key;
-                    newProject.Name = project.Name;
-                    newProject.Value = project.Name;
-                    profile.Projects.Add(project.Id, newProject);
-                }
-
-                var statuses = await jira.Statuses.GetStatusesAsync();
-                profile.Statuses.Clear();
-                foreach (IssueStatus status in statuses)
-                {
-                    var issueStatusItem = new IssueStatusItem();
-                    issueStatusItem.Key = status.Name;
-                    issueStatusItem.Name = status.Name;
-                    issueStatusItem.Value = status.Name;
-                    profile.Statuses.Add(status.Id, issueStatusItem);
-                }
-            }
-            catch (System.Security.Authentication.AuthenticationException e)
-            {
-                onInvalidCredentials();
-                return false;
-            }
-            catch (Exception e)
-            {
-                onNetworkIssue();
-                return false;
-            }
-
-            Profiles.Save();
-
-            var appSettings = ServicesContainer.GetServiceTyped<Settings>("settings");
-
-
-            appSettings.LastSelectedProfile = profile.GetId();
-            appSettings.Save();
-            onSuccessfulLogin();
-            return true;
+            return LoginState.SUCCESS;
         }
     }
 }
-
-        /*
-        async protected Task<bool> attemptLogin(string hostname, string username, string password, bool newProject = false)
-        {
-            try
-            {
-                JiraRestClientSettings settings = new JiraRestClientSettings();
-                jira = Jira.CreateRestClient(hostname, username, password);
-                var d = await jira.Projects.GetProjectsAsync();
-
-                Sikor.Model.Profile project = new Sikor.Model.Profile();
-                project.Host = hostname;
-                project.Password = password;
-                project.Username = username;
-                if (newProject)
-                {
-                    project.Name = ProfileName;
-                    profiles.Add(project);
-                    storage.Set("profiles", profiles);
-                }
-
-                this.RaisePropertyChanged("TrackedIssue");
-
-                LoginFormVisible = false;
-                state = State.SEARCH;
-                loadUserProjects();
-                loadStatuses();
-                loadTasks();
-            }
-            catch (System.Security.Authentication.AuthenticationException e)
-            {
-                Error = "Invalid credentials";
-            }
-            catch (Exception e)
-            {
-                Error = e.Message;
-            }
-
-            return true;
-        }
-    }
-}
-*/

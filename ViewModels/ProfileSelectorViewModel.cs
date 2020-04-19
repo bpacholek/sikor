@@ -13,21 +13,50 @@ using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia;
 using Sikor.Util.Ui;
+using Sikor.Container;
+using Sikor.Model;
+using Sikor.Enum;
+
 namespace Sikor.ViewModels
 {
-    public class ProfileSelectorViewModel : ReactiveObject, IService
+    public class ProfileSelectorViewModel : ReactiveViewServiceProvider
     {
         Settings Settings;
 
-        protected ObservableCollection<ListItem> profileItems;
-        public ObservableCollection<ListItem> ProfileItems
+        public ObservableCollection<ListableItem> ProfileItems
         {
-            get => profileItems;
-            set => this.RaiseAndSetIfChanged(ref profileItems, value);
+            get {
+                var profileItems = new ObservableCollection<ListableItem>();
+                var profilesList = AppState.Profiles.GetIdAndNamesList();
+
+                var item = new ListableItem();
+                item.Value = "- select profile -";
+                item.Key = "-1";
+                profileItems.Add(item);
+
+                ListableItem selected = item;
+
+                foreach (string id in profilesList.Keys)
+                {
+                    item = new ListableItem();
+                    item.Value = profilesList[id];
+                    item.Key = id;
+
+                    if (id == Settings.LastSelectedProfile)
+                    {
+                        selected = item;
+                    }
+
+                    profileItems.Add(item);
+                }
+
+                selectedProfile = selected;
+                return profileItems;
+            }
         }
 
-        protected ListItem selectedProfile;
-        public ListItem SelectedProfile
+        protected ListableItem selectedProfile;
+        public ListableItem SelectedProfile
         {
             get => selectedProfile;
             set {
@@ -42,138 +71,73 @@ namespace Sikor.ViewModels
 
         public void ReloadProfiles()
         {
-            var profileItems = new ObservableCollection<Model.ListItem>();
-            var profilesList = Profiles.GetIdList();
-
-            var item = new ListItem();
-            item.Name = "- select profile -";
-            item.Value = "-1";
-            item.Key = "-1";
-            profileItems.Add(item);
-
-            ListItem selected = item;
-
-            foreach (string id in profilesList.Keys)
-            {
-                item = new ListItem();
-                item.Name = profilesList[id];
-                item.Value = profilesList[id];
-                item.Key = id;
-
-                if (id == Settings.LastSelectedProfile)
-                {
-                    selected = item;
-                }
-
-                profileItems.Add(item);
-            }
-
-            selectedProfile = selected;
-            ProfileItems = profileItems;
-
+            this.RaisePropertyChanged("ProfileItems");
         }
 
         public ProfileSelectorViewModel()
         {
-            Loader = ServicesContainer.GetServiceTyped<FullLoaderViewModel>("loader");
-
-            Settings = ServicesContainer.GetServiceTyped<Settings>("settings");
-            ServicesContainer.RegisterService("ProfileSelectorViewModel", this);
-            Profiles = ServicesContainer.GetServiceTyped<Profiles>("profiles");
             ReloadProfiles();
         }
 
-
         async public void DeleteSelected()
         {
-            var Loader = ServicesContainer.GetServiceTyped<FullLoaderViewModel>("loader");
-            Loader.Show();
+            AppState.Loader.Show();
             if (SelectedProfile == null || SelectedProfile.Key == "-1")
             {
                 await MsgBox.Show("Ups!", "No profile is selected!", Icon.Warning);
-                Loader.Hide();
+                AppState.Loader.Hide();
                 return;
             }
 
-            var question = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
-            {
-                ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
-                ContentTitle = "Confirmation",
-                ContentMessage = "Are you sure that you want to remove the selected project?",
-                Icon = MessageBox.Avalonia.Enums.Icon.Info,
-                Style = MessageBox.Avalonia.Enums.Style.None
-            });
-
-            var result = await question.Show();
+            var result = await MsgBox.Show("Profile deletion", "Are you sure that you want to remove the selected project?", Icon.Warning, ButtonEnum.YesNo);
             if (result == ButtonResult.Yes)
             {
-                Profiles.DeleteByKey(SelectedProfile.Key);
+                //TODO move out of view model
                 selectedProfile = null;
                 Settings.LastSelectedProfile = null;
                 Settings.Save();
                 Profiles.Save();
                 ReloadProfiles();
             }
-            Loader.Hide();
-
+            AppState.Loader.Hide();
         }
 
-        FullLoaderViewModel Loader;
         async public void LoginAttempt()
         {
-            Loader.Show();
+            AppState.Loader.Show();
             if (SelectedProfile == null || SelectedProfile.Key == "-1")
             {
                 await MsgBox.Show("Ups!", "No profile is selected!", Icon.Warning);
-                Loader.Hide();
+                AppState.Loader.Hide();
                 return;
             }
+
             var selectedProfile = Profiles.Get(SelectedProfile.Key);
-
-            var JiraWrapper = new JiraWrapper();
-            JiraWrapper.onValidationError += JiraWrapper_onValidationError;
-            JiraWrapper.onInvalidCredentials += JiraWrapper_onInvalidCredentials;
-            JiraWrapper.onNetworkIssue += JiraWrapper_onNetworkIssue;
-            JiraWrapper.onSuccessfulLogin += JiraWrapper_onSuccessfulLogin;
-            JiraWrapper.AtteptLogin(selectedProfile);
-
+            _ = Task.Run(() => AppState.Jira.Login(selectedProfile)).ContinueWith(
+                async r => {
+                    switch(r.Result)
+                    {
+                        case LoginState.SUCCESS:
+                            AppState.Login(selectedProfile);
+                        break;
+                        case LoginState.INVALID_CREDENTIALS:
+                            await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden);
+                        break;
+                        case LoginState.NETWORK_ERROR:
+                            var result = await MsgBox.Show("Network connection", "Could not verify your login information due to network connection issues,\r\nyet if you are certain of your access details you may continue and try to operate on previously cached projects and issues.\r\nThis will allow you to track progress of your work offline and upload it when network connection is available.\r\nDo you want to continue?", Icon.Warning, ButtonEnum.YesNo);
+                            if (result == ButtonResult.No)
+                            {
+                                //do nothing
+                            } else
+                            {
+                                AppState.Login(selectedProfile);
+                            }
+                        break;
+                    }
+                    AppState.Loader.Hide();
+            });
         }
 
-        async private void JiraWrapper_onValidationError(string message)
-        {
-            await MsgBox.Show("Input validation errors", message, Icon.Error);
-            Loader.Hide();
-        }
 
-        async private void JiraWrapper_onSuccessfulLogin()
-        {
-            Loader.Hide();
-            Login();
-        }
-
-        private void Login()
-        {
-            var stateController = new UserState();
-            stateController.Login(Profiles.Get(SelectedProfile.Key));
-        }
-
-        async private void JiraWrapper_onNetworkIssue()
-        {
-            var result = await MsgBox.Show("Network connection", "Could not verify your login information due to network connection issues,\r\nyet if you are certain of your access details you may continue and try to operate on previously cached projects and issues.\r\nThis will allow you to track progress of your work offline and upload it when network connection is available.\r\nDo you want to continue?", Icon.Warning, ButtonEnum.YesNo);
-            Loader.Hide();
-            if (result == ButtonResult.No)
-            {
-                //do nothing
-            } else
-            {
-                Login();
-            }
-        }
-
-        async private void JiraWrapper_onInvalidCredentials()
-        {
-            await MsgBox.Show("Forbidden", "Invalid credentials", Icon.Forbidden);
-            Loader.Hide();
-        }
     }
 }

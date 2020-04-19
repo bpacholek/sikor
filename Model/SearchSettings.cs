@@ -9,7 +9,7 @@ namespace Sikor.Model
      * Search settings for Jira search.
      * </summary>
      */
-    public class IssuesSearchOptions
+    public class SearchSettings
     {
         public string Project { get; set; }
 
@@ -23,16 +23,19 @@ namespace Sikor.Model
 
         public bool ExcludeQA { get; set; }
 
-
+        public List<string> Statuses;
         public bool AssignedToCurrentUser { get; set; }
 
-        public IssuesSearchOptions()
+        public SearchSettings()
         {
             Project = "";
             Summary = "";
             IssueKey = "";
             Sorting = "";
             AssignedToCurrentUser = true;
+            ExcludeResolved = false;
+            ExcludeQA = false;
+            Statuses = new List<string>();
         }
 
         public override string ToString()
@@ -62,6 +65,11 @@ namespace Sikor.Model
             if (ExcludeResolved == true)
             {
                 parameters.Add("Resolved != \"true\"");
+            }
+
+            if (Statuses.Count > 0)
+            {
+                parameters.Add("status in (\"" + String.Join("\",\"", Statuses) + "\")");
             }
 
 

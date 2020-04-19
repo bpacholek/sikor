@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using ReactiveUI;
 using Sikor.Services;
+using Sikor.Container;
 
 namespace Sikor.ViewModels
 {
-    public class FullLoaderViewModel : ReactiveObject, IService
+    public class FullLoaderViewModel : ReactiveViewServiceProvider
     {
         protected bool loaderVisible = false;
 
@@ -25,9 +26,6 @@ namespace Sikor.ViewModels
         {
             LoaderVisible = false;
         }
-        public FullLoaderViewModel()
-        {
-            ServicesContainer.RegisterService("loader", this);
-        }
+
     }
 }

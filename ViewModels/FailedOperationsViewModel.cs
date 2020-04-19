@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using ReactiveUI;
 using Sikor.Services;
+using Sikor.Container;
 
 namespace Sikor.ViewModels
 {
-    public class FailedOperationsViewModel : ReactiveObject, IService
+    public class FailedOperationsViewModel : ReactiveViewServiceProvider
     {
         protected bool loaderVisible = false;
 

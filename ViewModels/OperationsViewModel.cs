@@ -1,9 +1,8 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
-using Atlassian.Jira;
 using Sikor.Services;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
@@ -14,80 +13,50 @@ using MessageBox.Avalonia.Enums;
 using Sikor.Util.Ui;
 using System.Timers;
 using System.Diagnostics;
+using Sikor.Container;
 
 namespace Sikor.ViewModels
 {
 
-    public class OperationsViewModel : ReactiveObject, IService
+    public class OperationsViewModel : ReactiveViewServiceProvider
     {
         public bool IsSelected { get; set; }
-        public bool IsTracking
-        {
-            get
-            {
-                if (userState != null && userState.UserProfile != null)
-                {
-                    return userState.UserProfile.IsTracking;
-                }
-                return false;
-            }
-        }
+        public bool IsTracking => (AppState.ActiveProfile != null ? AppState.ActiveProfile.IsTracking : false);
 
-        public bool HasFailedStatuses
-        {
-            get
-            {
-                if (userState != null && userState.UserProfile != null)
-                {
-                    return userState.UserProfile.FailedStatusUpdateOperations.Count > 0;
-                }
-                return false;
-            }
-        }
+        public Tracking TrackedIssue => (AppState.ActiveProfile != null ? AppState.ActiveProfile.CurrentTracking : null);
+        public bool HasFailedStatuses => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedStatusUpdates.Count > 0 : false);
+        public bool HasFailedWorklogs => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedWorklogs.Count > 0 : false);
+        public Issue SelectedIssue => AppState.ActiveProfile.SelectedIssue;
+        public ListableItem SelectedNewStatus {get;set;}
 
-        public bool HasFailedWorklogs
+        async public void StoreTracking(bool saveOnFailure = false)
         {
-            get
-            {
-                if (userState != null && userState.UserProfile != null)
-                {
-                    return userState.UserProfile.FailedWorklogs.Count > 0;
-                }
-                return false;
-            }
-        }
-
-        async public void StoreTracking()
-        {
-            Loader.Show();
-            if ((DateTime.Now - TrackedIssue.Created).TotalMinutes < 1)
+            AppState.Loader.Show();
+            if ((DateTime.Now - AppState.ActiveProfile.CurrentTracking.Created).TotalMinutes < 1)
             {
                 var result = await MsgBox.Show("Warning", "Sadly, Jira cannot track anything under a minute. Do you wish to save this tracking as 1 minute [Yes] or continue tracking [Cancel]?", Icon.Warning, ButtonEnum.OkCancel);
                 if (result == ButtonResult.Cancel)
                 {
-                    Loader.Hide();
+                    AppState.Loader.Hide();
                     return;
                 }
             }
 
-            jira.StoreWorklog(TrackedIssue.Key, TrackedIssue.Created, DateTime.Now, TrackedIssue.Comment);
+            _ = Task.Run(() => AppState.Jira.StoreWorklog(AppState.ActiveProfile.CurrentTracking, saveOnFailure).ContinueWith(
+                async r => {
+                    if (r.Result == false) {
+                        var result = await MsgBox.Show("Failed", "Failed to store the worklog. Do you wish to save it for later if next attempt fails [Yes], just retry [No] or abandon [Abort]?", Icon.Error, ButtonEnum.YesNoAbort);
+                        if (result != ButtonResult.Abort) {
+                            StoreTracking(result == ButtonResult.Yes);
+                        }
+                        return;
+                    } else {
+                        await MsgBox.Show("Success", "Worklog successfully saved", Icon.Success, ButtonEnum.Ok);
+                        AppState.ActiveProfile.CurrentTracking = null;
+                    }
+            }));
         }
 
-        public TrackingIssueItem TrackedIssue
-        {
-            get
-            {
-                if (userState != null && userState.UserProfile != null)
-                {
-                    return userState.UserProfile.TrackingIssue;
-                }
-                return null;
-            }
-        }
-
-        public IssueItem SelectedIssue { get; private set; }
-
-        public IssueStatusItem SelectedNewStatus {get;set;}
 
         public ObservableCollection<FailedStatusUpdateOperation> FailedStatuses
         {
@@ -140,9 +109,6 @@ namespace Sikor.ViewModels
             ServicesContainer.RegisterService("current_tracking", this);
         }
 
-        protected UserState userState;
-
-        protected FullLoaderViewModel Loader;
 
         public FailedStatusUpdateOperation SelectedFailedStatus { get; set; }
 
@@ -203,21 +169,9 @@ namespace Sikor.ViewModels
 
         public void init()
         {
-            userState = ServicesContainer.GetServiceTyped<UserState>("state");
-            Loader = ServicesContainer.GetServiceTyped<FullLoaderViewModel>("loader");
-            jira = ServicesContainer.GetServiceTyped<JiraWrapper>("signed_jira");
             TimeUpdater = new Timer(1000);
             TimeUpdater.Elapsed += TimeUpdater_Elapsed;
             TimeUpdater.Start();
-            jira.onStatusUpdateSuccess += Jira_onStatusUpdateSuccess;
-            jira.onStatusUpdateFailed += Jira_onStatusUpdateFailed;
-            jira.onStatusUpdateRetryFailed += Jira_onStatusUpdateRetryFailed;
-            jira.onStatusUpdateRetrySuccess += Jira_onStatusUpdateSuccess1;
-
-            jira.onWorklogAddedSuccessful += Jira_onWorklogAddedSuccessful;
-            jira.onWorklogAddingFailed += Jira_onWorklogAddingFailed;
-            jira.onWorklogRetryAddedSuccessful += Jira_onWorklogRetryAddedSuccessful;
-            jira.onWorklogRetryAddingFailed += Jira_onWorklogRetryAddingFailed;
 
             IssueStatuses = new ObservableCollection<IssueStatusItem>();
             foreach (IssueStatusItem status in this.userState.UserProfile.Statuses.Values)
@@ -391,7 +345,7 @@ namespace Sikor.ViewModels
         {
             if (IsTracking)
             {
-                var diff = DateTime.Now - userState.UserProfile.TrackingIssue.Created;
+                var diff = DateTime.Now - TrackedIssue.Created;
                 TrackingTime = Math.Floor(diff.TotalHours).ToString().PadLeft(2, '0') + ":" + diff.Minutes.ToString().PadLeft(2,'0') + ":" + diff.Seconds.ToString().PadLeft(2,'0');
                 this.RaisePropertyChanged("TrackingTime");
 
@@ -426,46 +380,40 @@ namespace Sikor.ViewModels
 
         async private void StartTracking()
         {
-            if (userState.UserProfile.IsTracking)
+            if (IsTracking)
             {
                 await MsgBox.Show("Error", "You are already tracking an issue. Please finish it first.", Icon.Warning);
                 return;
             }
-                userState.UserProfile.IsTracking = true;
-            var trackedIssue = new TrackingIssueItem();
-            TrackingTime = "0s";
-            trackedIssue.Created = DateTime.Now;
-            trackedIssue.Key = SelectedIssue.Key;
-            trackedIssue.Name = SelectedIssue.Name;
-            trackedIssue.Project = SelectedIssue.Project;
-            trackedIssue.Status = SelectedIssue.Status;
-            trackedIssue.Comment = "";
 
+            //TODO move to appstate
+            AppState.ActiveProfile.CurrentTracking = new Tracking()
+            {
+                Created = DateTime.Now,
+                To = default(DateTime),
+                IssueKey = SelectedIssue.IssueKey,
+                Summary = SelectedIssue.Summary,
+                Key = SelectedIssue.Key,
+                ProjectKey = SelectedIssue.ProjectKey,
+                Comment = "",
+                Status = SelectedIssue.Status
+            };
 
+            AppState.Profiles.Save();
 
-
-            userState.UserProfile.TrackingIssue = trackedIssue;
-
-            ServicesContainer.GetServiceTyped<Profiles>("profiles").Save();
             this.RaisePropertyChanged("TrackedIssue");
-
             this.RaisePropertyChanged("TrackedIssue_Name");
             this.RaisePropertyChanged("TrackedIssue_Project");
-
             this.RaisePropertyChanged("TrackedIssue_Status");
-
             this.RaisePropertyChanged("TrackedIssue_Comment");
-
             this.RaisePropertyChanged("TrackedIssue_Created");
             this.RaisePropertyChanged("TrackedIssue_Name");
-
-
             this.RaisePropertyChanged("IsTracking");
         }
 
         async private void CancelTracking()
         {
-            Loader.Show();
+            AppState.Loader.Show();
             var result = await MsgBox.Show("Confirm", "Are you sure that you want to cancel tracking?", Icon.Stop, ButtonEnum.YesNo);
             if (result == ButtonResult.No)
             {
@@ -473,9 +421,9 @@ namespace Sikor.ViewModels
             }
             else
             {
-                userState.UserProfile.IsTracking = false;
-                userState.UserProfile.TrackingIssue = null;
-                ServicesContainer.GetServiceTyped<Profiles>("profiles").Save();
+                AppState.ActiveProfile.CurrentTracking = null;
+                AppState.Profiles.Save();
+
                 this.RaisePropertyChanged("TrackedIssue");
                 this.RaisePropertyChanged("TrackedIssue_Name");
                 this.RaisePropertyChanged("TrackedIssue_Project");
@@ -484,11 +432,9 @@ namespace Sikor.ViewModels
                 this.RaisePropertyChanged("TrackedIssue_Created");
                 this.RaisePropertyChanged("TrackedIssue_Name");
                 this.RaisePropertyChanged("IsTracking");
-
-
             }
 
-            Loader.Hide();
+            AppState.Loader.Hide();
         }
         async private void Jira_onStatusUpdateFailed(string issueKey, string summary, string status)
         {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
-using Atlassian.Jira;
+//using Atlassian.Jira;
 using Sikor.Services;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
@@ -13,34 +13,98 @@ using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia;
 using Sikor.Util;
+using Sikor.Container;
+
 namespace Sikor.ViewModels
 {
-    public class SidebarViewModel : ReactiveObject, IService
+    public class SidebarViewModel : ReactiveViewServiceProvider
     {
-        protected UserState userState;
+        public ObservableCollection<Status> Statuses {
+            get {
+                var statuses = new ObservableCollection<Status>();
+                foreach(Status status in AppState.ActiveProfile.Statuses.Values) {
+                    statuses.Add(status);
+                }
 
-        JiraWrapper signedJira;
+                return statuses;
+            }
+        }
 
-        public ObservableCollection<IssueStatusItem> IssueStatuses { get; private set; }
+        public bool SearchOnlyCurrentUsersIssues { get; set; }
+        public ObservableCollection<Issue> Issues { get; private set; }
 
-        public bool IssueSearchOnlyMyIssues { get; set; }
-        public ObservableCollection<IssueItem> Issues { get; private set; }
-
-        protected IssueItem selectedIssue;
-        public IssueItem SelectedIssue
+        public Issue SelectedIssue
         {
             get
             {
-                return selectedIssue;
+                return AppState.ActiveProfile.SelectedIssue;
             }
             set
             {
-                selectedIssue = value;
-                trackingView.SelectIssue(selectedIssue);
+                AppState.SelectIssue(value);
             }
         }
-        public ObservableCollection<ListItem> ProfileProjects { get; private set; }
-        public ObservableCollection<ListItem> SortOptions { get; private set; }
+        public ObservableCollection<Project> Projects {
+            get {
+                var profileProjects = new ObservableCollection<Project>();
+
+                Project Any = new Project()
+                {
+                    Key = "-1",
+                    Value = "-- any --",
+                    Shortcut = ""
+                };
+
+                profileProjects.Add(Any);
+
+                if (SelectedProject == null || !AppState.ActiveProfile.Projects.ContainsKey(SelectedProject.Key)) {
+                    SelectedProject = Any;
+                }
+
+                foreach (Project project in AppState.ActiveProfile.Projects.Values)
+                {
+                    profileProjects.Add(project);
+                }
+
+                return profileProjects;
+            }
+        }
+        public ListableItem SelectedSorting { get; private set; }
+        public ObservableCollection<ListableItem> SortOptions { get {
+            //not selected
+            var first = new ListableItem() {
+                    Value = "Last viewed, desc",
+                    Key = "LastViewed_DESC"
+                };
+
+            if (SelectedSorting == null) {
+                SelectedSorting = first;
+            }
+
+            return new ObservableCollection<ListableItem> {
+                first,
+                new ListableItem() {
+                    Value = "Last viewed, asc",
+                    Key = "LastViewed_ASC"
+                },
+                new ListableItem() {
+                    Value = "Created, desc",
+                    Key = "Created_DESC"
+                },
+                new ListableItem() {
+                    Value = "Created, asc",
+                    Key = "Created_ASC"
+                },
+                new ListableItem() {
+                    Value = "Time spent, desc",
+                    Key = "TimeSpent_DESC"
+                },
+                new ListableItem() {
+                    Value = "Time spent, asc",
+                    Key = "TimeSpent_asc"
+                }
+            };
+        } }
 
         protected string searchString;
         public string IssueSearchText {
@@ -56,104 +120,30 @@ namespace Sikor.ViewModels
 
         async protected void search()
         {
-            var statuses = new List<string>();
-            foreach (IssueStatusItem status in IssueStatuses)
+            var selectedStatuses = new List<string>();
+            foreach (Status status in AppState.ActiveProfile.Statuses.Values)
             {
                 if (status.Selected)
                 {
-                    statuses.Add(status.Key);
+                    selectedStatuses.Add(status.Key);
                 }
             }
 
-            Issues = await signedJira.Search(searchString, SelectedSorting.Key, IssueSearchOnlyMyIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", statuses, userState.UserProfile);
+            Issues = await AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile);
             this.RaisePropertyChanged("Issues");
-
         }
 
-        public ListItem SelectedSorting { get; private set; }
 
-        public ListItem SelectedProject { get; set; }
+        public Project SelectedProject { get; set; }
 
-
-        public CurrentTrackingViewModel trackingView;
-        public Sidebar()
+        public void Reload()
         {
-            ServicesContainer.RegisterService("sidebar", this);
-
-        }
-        public void Init()
-        {
-            trackingView = ServicesContainer.GetServiceTyped<CurrentTrackingViewModel>("current_tracking");
-
-            IssueSearchOnlyMyIssues = false;
-            signedJira = ServicesContainer.GetServiceTyped<JiraWrapper>("signed_jira");
+            SearchOnlyCurrentUsersIssues = false;
             searchString = "";
-            userState = ServicesContainer.GetServiceTyped<UserState>("state");
-
-            IssueStatuses = new ObservableCollection<IssueStatusItem>();
-            foreach(IssueStatusItem status in this.userState.UserProfile.Statuses.Values)
-            {
-                IssueStatuses.Add(status);
-            }
-
-            ProfileProjects = new ObservableCollection<ListItem>();
-
-            ListItem Any = new ListItem();
-            Any.Name = "-- any --";
-            Any.Value = "-- any --";
-            Any.Key = "-1";
-            ProfileProjects.Add(Any);
-
-            SelectedProject = Any;
-
-            foreach (ListItem project in this.userState.UserProfile.Projects.Values)
-            {
-                ProfileProjects.Add(project);
-            }
-
-            SortOptions = new ObservableCollection<ListItem>();
-            //not selected
-            ListItem item = new ListItem();
-            item.Name = "Last viewed, desc";
-            item.Value = "Last viewed, desc";
-            item.Key = "LastViewed DESC";
-            SortOptions.Add(item);
-
-            SelectedSorting = item;
-
-             item = new ListItem();
-            item.Name = "Last viewed, asc";
-            item.Value = "Last viewed, asc";
-            item.Key = "LastViewed ASC";
-            SortOptions.Add(item);
-
-             item = new ListItem();
-            item.Name = "Created, desc";
-            item.Value = "Created, desc";
-            item.Key = "Created DESC";
-            SortOptions.Add(item);
-
-             item = new ListItem();
-            item.Name = "Created, asc";
-            item.Value = "Created, asc";
-            item.Key = "Created asc";
-            SortOptions.Add(item);
-
-            item = new ListItem();
-            item.Name = "Time spent, Desc";
-            item.Value = "Time spent, Desc";
-            item.Key = "TimeSpent desc";
-            SortOptions.Add(item);
-
-            item = new ListItem();
-            item.Name = "Time spent, asc";
-            item.Value = "Time spent, asc";
-            item.Key = "TimeSpent asc";
-            SortOptions.Add(item);
 
             this.RaisePropertyChanged("SortOptions");
-            this.RaisePropertyChanged("SelectedSorting");
-            this.RaisePropertyChanged("ProfileProjects");
+            this.RaisePropertyChanged("Issues");
+            this.RaisePropertyChanged("Projects");
             this.RaisePropertyChanged("SelectedProject");
             this.RaisePropertyChanged("IssueStatuses");
 

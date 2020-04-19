@@ -12,25 +12,42 @@ using Sikor.Repository;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia;
+using Sikor.Container;
 using Sikor.Util.Ui;
+using Sikor.Enum;
+
 namespace Sikor.ViewModels
 {
-    public class ProfileCreatorViewModel : ReactiveObject
+    public class ProfileCreatorViewModel : ReactiveViewServiceProvider
     {
-        protected FullLoaderViewModel Loader;
-
         async public void TestAndSave()
         {
-            Loader.Show();
-            var JiraWrapper = new JiraWrapper();
-            JiraWrapper.onValidationError += JiraWrapper_onValidationError;
-            JiraWrapper.onInvalidCredentials += JiraWrapper_onInvalidCredentials;
-            JiraWrapper.onNetworkIssue += JiraWrapper_onNetworkIssue;
-            JiraWrapper.onSuccessfulLogin += JiraWrapper_onSuccessfulLogin;
-            JiraWrapper.CreateProfile(ProfileName, Hostname, Username, Password);
+            AppState.Loader.Show();
+
+            _ = Task.Run(() => AppState.Jira.CreateProfile(ProfileName, Url, Username, Password)).ContinueWith(
+                async r => {
+                    if (r.IsFaulted)
+                    {
+                        _ = await MsgBox.Show("Input validation errors", r.Exception.InnerExceptions[0].Message, Icon.Error);
+                    } else {
+                        switch(r.Result)
+                        {
+                            case LoginState.SUCCESS:
+                                await MsgBox.Show("Success", "New profile created successfully!", Icon.Success);
+                            break;
+                            case LoginState.INVALID_CREDENTIALS:
+                                await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden);
+                            break;
+                            case LoginState.NETWORK_ERROR:
+                                await MsgBox.Show("Connection problems", "Could not connect: please check the URL and your network connection.", Icon.Error);
+                            break;
+                        }
+                        AppState.Loader.Hide();
+                    }
+            });
         }
 
-        public string Hostname { get; set; }
+        public string Url { get; set; }
 
         public string ProfileName { get; set; }
 
@@ -38,44 +55,12 @@ namespace Sikor.ViewModels
 
         public string Password { get; set; }
 
-
         public ProfileCreatorViewModel()
         {
-
-            Loader = ServicesContainer.GetServiceTyped<FullLoaderViewModel>("loader");
-            Hostname = "";
+            Url = "";
             Username = "";
             ProfileName = "";
             Password = "";
-
-
-    }
-
-        async private void JiraWrapper_onValidationError(string message)
-        {
-            await MsgBox.Show("Input validation errors", message, Icon.Error);
-            Loader.Hide();
-        }
-
-        async private void JiraWrapper_onSuccessfulLogin()
-        {
-            ServicesContainer.GetServiceTyped<ProfileSelectorViewModel>("ProfileSelectorViewModel").ReloadProfiles();
-            await MsgBox.Show("Success", "Profile has been successfully added!", Icon.Success);
-
-            Loader.Hide();
-
-        }
-
-        async private void JiraWrapper_onNetworkIssue()
-        {
-            await MsgBox.Show("Network error", "Could not connect to the provided URL. Please check your network connection...", Icon.Error);
-            Loader.Hide();
-        }
-
-        async private void JiraWrapper_onInvalidCredentials()
-        {
-            await MsgBox.Show("Forbidden", "Invalid credentials", Icon.Forbidden);
-            Loader.Hide();
         }
     }
 }

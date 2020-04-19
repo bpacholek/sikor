@@ -12,21 +12,17 @@ using Sikor.Repository;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using System.Reflection;
+using Sikor.Container;
 
 namespace Sikor.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject, IService
+    public class MainWindowViewModel : ReactiveViewServiceProvider
     {
         protected bool loginFormVisible = true;
         public bool LoginFormVisible
         {
             get => loginFormVisible;
             set => this.RaiseAndSetIfChanged(ref loginFormVisible, value);
-        }
-
-        public MainWindowViewModel()
-        {
-            ServicesContainer.RegisterService("MainWindow", this);
         }
 
         public string Version

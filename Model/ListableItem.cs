@@ -8,7 +8,7 @@ namespace Sikor.Model
      * </summary>
      */
     [Serializable]
-    abstract public class ListableItem
+    public class ListableItem
     {
         /**
          * <summary>
