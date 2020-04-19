@@ -37,7 +37,7 @@ namespace Sikor.ViewModels
         {
             get
             {
-                return AppState.ActiveProfile.SelectedIssue;
+                return AppState.ActiveProfile != null ? AppState.ActiveProfile.SelectedIssue : null;
             }
             set
             {

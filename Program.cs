@@ -9,6 +9,7 @@ using Atlassian.Jira;
 using Sikor.Repository;
 using Sikor.Model;
 using System.IO;
+using Sikor.Container;
 
 namespace Sikor
 {
@@ -27,35 +28,42 @@ namespace Sikor
                 return;
             }
 
-            string appPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var storage = new Storage(appPath);
-            ServicesContainer.RegisterService("storage", storage);
+            var appState = new AppState();
 
-            if (storage.Has("profiles"))
-            {
-                ServicesContainer.RegisterService("profiles", storage.Get<Profiles>("profiles"));
-            }
-            else
-            {
-                ServicesContainer.RegisterService("profiles", new Profiles());
-            }
+            Sikor.Container.IServiceProvider[] services = {
+                new Storage(),
+                new JiraWrapper(),
+                appState
+            };
 
-            if (storage.Has("settings"))
-            {
-                ServicesContainer.RegisterService("settings", storage.Get<Settings>("settings"));
-            }
-            else
-            {
-                ServicesContainer.RegisterService("settings", new Settings());
+            foreach (Sikor.Container.IServiceProvider service in services){
+                service.Register();
             }
 
-            ServicesContainer.RegisterService("jira_wrapper", new JiraWrapper());
+            var Ui = BuildAvaloniaApp(); //adds view models to container
+            var lifetime = new ClassicDesktopStyleApplicationLifetime();
+            Ui.SetupWithLifetime(lifetime);
+            Sikor.Container.ServiceContainer.Init();
+
+            //Ui.StartWithClassicDesktopLifetime(args);
+            appState.PostInit();
+
+            foreach (Sikor.Container.IServiceProvider service in services){
+                if (service.GetTypeString() == typeof(AppState).ToString()) {
+                    continue; //skip appsstate
+                }
+
+                service.PostInit();
+            }
+
+            lifetime.Start(args);
 
 
+/*
             using (SentrySdk.Init("https://79e453ed4dbd49a68acfd59bbe587d23@sentry.io/5166734"))
             {
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            }
+            } */
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

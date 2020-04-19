@@ -31,5 +31,12 @@ namespace Sikor.Container
         {
             return (T)Services[name];
         }
+
+        public static void Init()
+        {
+            foreach(IServiceProvider service in Services.Values) {
+                service.Init();
+            }
+        }
     }
 }

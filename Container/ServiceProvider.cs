@@ -12,6 +12,11 @@ namespace Sikor.Container
 
         }
 
+        public virtual void PostInit()
+        {
+
+        }
+
         public string GetTypeString()
         {
             return this.GetType().ToString();

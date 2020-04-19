@@ -13,8 +13,6 @@ namespace Sikor.Repository
     {
         protected Dictionary<string, T> items;
 
-        protected Storage storage;
-
         public Repository()
         {
             if (items == null)

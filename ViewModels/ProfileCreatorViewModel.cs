@@ -20,7 +20,7 @@ namespace Sikor.ViewModels
 {
     public class ProfileCreatorViewModel : ReactiveViewServiceProvider
     {
-        async public void TestAndSave()
+        public void TestAndSave()
         {
             AppState.Loader.Show();
 

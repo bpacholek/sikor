@@ -20,6 +20,8 @@ namespace Sikor.Services
 
         public Profile ActiveProfile;
 
+        public Settings Settings;
+
         public void SelectIssue(Issue issue)
         {
             ActiveProfile.SelectedIssue = issue;
@@ -28,15 +30,32 @@ namespace Sikor.Services
 
         public Profiles Profiles;
 
-        public override void Init()
+        public override void PostInit()
         {
-            MainWindow = ServiceContainer.GetServiceTyped<MainWindowViewModel>(typeof(MainWindowViewModel).GetType().ToString());
-            Sidebar = ServiceContainer.GetServiceTyped<SidebarViewModel>(typeof(SidebarViewModel).GetType().ToString());
-            Operations = ServiceContainer.GetServiceTyped<OperationsViewModel>(typeof(OperationsViewModel).GetType().ToString());
-            Loader = ServiceContainer.GetServiceTyped<FullLoaderViewModel>(typeof(FullLoaderViewModel).GetType().ToString());
-            ProfileSelector = ServiceContainer.GetServiceTyped<ProfileSelectorViewModel>(typeof(ProfileSelectorViewModel).GetType().ToString());
-            Jira = ServiceContainer.GetServiceTyped<JiraWrapper>(typeof(JiraWrapper).GetType().ToString());
-            Profiles = ServiceContainer.GetServiceTyped<Profiles>(typeof(Profiles).GetType().ToString());
+            MainWindow = ServiceContainer.GetServiceTyped<MainWindowViewModel>(typeof(MainWindowViewModel).ToString());
+            Sidebar = ServiceContainer.GetServiceTyped<SidebarViewModel>(typeof(SidebarViewModel).ToString());
+            Operations = ServiceContainer.GetServiceTyped<OperationsViewModel>(typeof(OperationsViewModel).ToString());
+
+            Loader = ServiceContainer.GetServiceTyped<FullLoaderViewModel>(typeof(FullLoaderViewModel).ToString());
+            ProfileSelector = ServiceContainer.GetServiceTyped<ProfileSelectorViewModel>(typeof(ProfileSelectorViewModel).ToString());
+            Jira = ServiceContainer.GetServiceTyped<JiraWrapper>(typeof(JiraWrapper).ToString());
+            var storage = ServiceContainer.GetServiceTyped<Storage>(typeof(Storage).ToString());
+
+            var settingsName = typeof(Settings).ToString();
+            if (storage.Has(settingsName)) {
+                Settings = storage.Get<Settings>(settingsName);
+            } else {
+                Settings = new Settings();
+            }
+
+            var profilesName = typeof(Profiles).ToString();
+            if (storage.Has(profilesName)) {
+                Profiles = storage.Get<Profiles>(profilesName);
+            } else {
+                Profiles = new Profiles();
+            }
+
+            ProfileSelector.ReloadProfiles();
         }
 
         public void Login(Profile profile)

@@ -8,18 +8,28 @@ namespace Sikor.Container
         public AppState AppState;
         public virtual void Register()
         {
+            string className = this.GetType().ToString();
+
             ServiceContainer.RegisterService(this.GetType().ToString(), this);
         }
 
         public virtual void Init()
         {
-            AppState = ServiceContainer.GetServiceTyped<AppState>(typeof(AppState).GetType().ToString());
+            string appState = typeof(Sikor.Services.AppState).ToString();
+            AppState = ServiceContainer.GetServiceTyped<AppState>(appState);
         }
 
         public ReactiveViewServiceProvider()
         {
             Register();
+            Init();
         }
+
+        public virtual void PostInit()
+        {
+
+        }
+
 
         public string GetTypeString()
         {

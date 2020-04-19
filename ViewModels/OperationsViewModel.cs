@@ -28,7 +28,7 @@ namespace Sikor.ViewModels
         public Tracking TrackedIssue => (AppState.ActiveProfile != null ? AppState.ActiveProfile.CurrentTracking : null);
         public bool HasFailedStatuses => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedStatusUpdates.Count > 0 : false);
         public bool HasFailedWorklogs => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedWorklogs.Count > 0 : false);
-        public Issue SelectedIssue => AppState.ActiveProfile.SelectedIssue;
+        public Issue SelectedIssue => (AppState.ActiveProfile != null ? AppState.ActiveProfile.SelectedIssue : null);
         public ListableItem SelectedNewStatus {get;set;}
 
         public FailedStatusUpdate SelectedFailedStatus { get; set; }

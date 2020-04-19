@@ -14,18 +14,20 @@ using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia;
 using Sikor.Util.Ui;
 using Sikor.Container;
-using Sikor.Model;
 using Sikor.Enum;
 
 namespace Sikor.ViewModels
 {
     public class ProfileSelectorViewModel : ReactiveViewServiceProvider
     {
-        Settings Settings;
 
         public ObservableCollection<ListableItem> ProfileItems
         {
             get {
+                if (AppState.Profiles == null) {
+                    return null;
+                }
+
                 var profileItems = new ObservableCollection<ListableItem>();
                 var profilesList = AppState.Profiles.GetIdAndNamesList();
 
@@ -42,7 +44,7 @@ namespace Sikor.ViewModels
                     item.Value = profilesList[id];
                     item.Key = id;
 
-                    if (id == Settings.LastSelectedProfile)
+                    if (id == AppState.Settings.LastSelectedProfile)
                     {
                         selected = item;
                     }
@@ -67,16 +69,9 @@ namespace Sikor.ViewModels
             }
         }
 
-        Profiles Profiles;
-
         public void ReloadProfiles()
         {
             this.RaisePropertyChanged("ProfileItems");
-        }
-
-        public ProfileSelectorViewModel()
-        {
-            ReloadProfiles();
         }
 
         async public void DeleteSelected()
@@ -94,9 +89,9 @@ namespace Sikor.ViewModels
             {
                 //TODO move out of view model
                 selectedProfile = null;
-                Settings.LastSelectedProfile = null;
-                Settings.Save();
-                Profiles.Save();
+                AppState.Settings.LastSelectedProfile = null;
+                AppState.Settings.Save();
+                AppState.Profiles.Save();
                 ReloadProfiles();
             }
             AppState.Loader.Hide();
@@ -112,7 +107,7 @@ namespace Sikor.ViewModels
                 return;
             }
 
-            var selectedProfile = Profiles.Get(SelectedProfile.Key);
+            var selectedProfile = AppState.Profiles.Get(SelectedProfile.Key);
             _ = Task.Run(() => AppState.Jira.Login(selectedProfile)).ContinueWith(
                 async r => {
                     switch(r.Result)

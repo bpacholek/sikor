@@ -20,17 +20,11 @@ namespace Sikor.Services
     {
         Jira jira;
 
-        Profiles Profiles;
-
-        Settings Settings;
-
         AppState AppState;
 
         public override void Init()
         {
-            Profiles = ServiceContainer.GetServiceTyped<Profiles>(typeof(Profiles).GetType().ToString());
-            Settings = ServiceContainer.GetServiceTyped<Settings>(typeof(Settings).GetType().ToString());
-            AppState = ServiceContainer.GetServiceTyped<AppState>(typeof(AppState).GetType().ToString());
+            AppState = ServiceContainer.GetServiceTyped<AppState>(typeof(AppState).ToString());
         }
 
         /**
@@ -73,7 +67,7 @@ namespace Sikor.Services
                 }
 
                 AppState.ActiveProfile.FailedWorklogs.Add(tracking);
-                Profiles.Save();
+                AppState.Profiles.Save();
             }
 
             return true;
@@ -114,7 +108,7 @@ namespace Sikor.Services
                 };
 
                 AppState.ActiveProfile.FailedStatusUpdates.Add(failedStatusOperation);
-                Profiles.Save();
+                AppState.Profiles.Save();
             }
 
             return true;
@@ -207,7 +201,7 @@ namespace Sikor.Services
                 throw new ArgumentException("Profile name must a non-empty string.");
             }
 
-            if (Profiles.Has(HashGenerator.MD5(profileName)))
+            if (AppState.Profiles.Has(HashGenerator.MD5(profileName)))
             {
                 throw new ArgumentException("Profile with such name already exists.");
             }
@@ -233,11 +227,11 @@ namespace Sikor.Services
             LoginState loginResult = await Login(profile);
 
             if (loginResult == LoginState.SUCCESS) {
-                Profiles.Add(profile);
-                Profiles.Save();
+                AppState.Profiles.Add(profile);
+                AppState.Profiles.Save();
 
-                Settings.LastSelectedProfile = profile.GetId();
-                Settings.Save();
+                AppState.Settings.LastSelectedProfile = profile.GetId();
+                AppState.Settings.Save();
             }
 
             return loginResult;
@@ -282,11 +276,11 @@ namespace Sikor.Services
             }
 
             //store any updates to the profile
-            Profiles.Save();
+            AppState.Profiles.Save();
 
             //mark the last selected profile in settings
-            Settings.LastSelectedProfile = profile.GetId();
-            Settings.Save();
+            AppState.Settings.LastSelectedProfile = profile.GetId();
+            AppState.Settings.Save();
 
             return LoginState.SUCCESS;
         }

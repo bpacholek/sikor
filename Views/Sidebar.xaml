@@ -3,14 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
-             
+
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Sikor.Views.Sidebar">
   <UserControl.DataContext>
-    <vm:Sidebar/>
+    <vm:SidebarViewModel/>
   </UserControl.DataContext>
   <DockPanel LastChildFill="True" VerticalAlignment="Stretch">
-    <Border  
+    <Border
       Background="#6c51a4"
       BorderBrush="Black"
       BorderThickness="0 0 1 0"

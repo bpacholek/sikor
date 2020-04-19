@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
-             
-             x:Class="Sikor.Views.CurrentTracking">
+
+             x:Class="Sikor.Views.Operations">
   <UserControl.DataContext>
-    <vm:CurrentTrackingViewModel/>
+    <vm:OperationsViewModel/>
   </UserControl.DataContext>
   <DockPanel>
     <Border
@@ -81,7 +81,7 @@
                 <Button Grid.Column="4" Grid.Row="0" Grid.RowSpan="4" Command="{Binding StartTracking}">
                   <StackPanel Orientation="Vertical">
                     <Image Source="avares://Sikor/Assets/play-circle-regular.png" Width="24" Height="24" Margin="5"></Image>
-                    <TextBlock>Start tracking</TextBlock>  
+                    <TextBlock>Start tracking</TextBlock>
                   </StackPanel>
                 </Button>
               </Grid>
@@ -140,7 +140,7 @@
             </DockPanel>
           </StackPanel>
         </Border>
-        
+
         <Border Margin="0 5 0 0"
           Background="#6c51a4"
           BorderBrush="Black"

@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Sikor.Views
 {
-    public class CurrentTracking : UserControl
+    public class Operations : UserControl
     {
-        public CurrentTracking()
+        public Operations()
         {
             this.InitializeComponent();
         }

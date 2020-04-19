@@ -12,15 +12,17 @@ namespace Sikor.Container
          * Registers a context provider or service.
          * </summary>
          */
-        public void Register();
+        void Register();
 
         /**
          * <summary>
          * Initializes a context provider or service.
          * </summary>
          */
-        public void Init();
+        void Init();
 
-        public string GetTypeString();
+        void PostInit();
+
+        string GetTypeString();
     }
 }
