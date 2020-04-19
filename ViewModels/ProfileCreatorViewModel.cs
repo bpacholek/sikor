@@ -1,17 +1,6 @@
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.ObjectModel;
-using Atlassian.Jira;
 using Sikor.Services;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using Sikor.Model;
-using Sikor.Repository;
-using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia;
 using Sikor.Container;
 using Sikor.Util.Ui;
 using Sikor.Enum;
@@ -21,6 +10,14 @@ namespace Sikor.ViewModels
 {
     public class ProfileCreatorViewModel : ReactiveViewServiceProvider
     {
+        public string Url { get; set; }
+
+        public string ProfileName { get; set; }
+
+        public string Username { get; set; }
+
+        public string Password { get; set; }
+
         public void TestAndSave()
         {
             AppState.Loader.Show();
@@ -51,14 +48,6 @@ namespace Sikor.ViewModels
                     AppState.Loader.Hide();
                 });
         }
-
-        public string Url { get; set; }
-
-        public string ProfileName { get; set; }
-
-        public string Username { get; set; }
-
-        public string Password { get; set; }
 
         public ProfileCreatorViewModel()
         {

@@ -5,7 +5,6 @@ using Sikor.Services;
 using Sikor.Model;
 using Sikor.Container;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 
 namespace Sikor.ViewModels
 {
@@ -121,8 +120,8 @@ namespace Sikor.ViewModels
             }
         }
 
-        public string SearchClass {get; private set;}
-        public string SearchText {get; private set;}
+        public string SearchClass { get; private set; }
+        public string SearchText { get; private set; }
 
 
         protected string searchString;
@@ -159,7 +158,8 @@ namespace Sikor.ViewModels
                 }));
         }
 
-        protected void UpdateSearchProperties(string style, string text) {
+        protected void UpdateSearchProperties(string style, string text)
+        {
             SearchClass = style;
             SearchText = text;
             this.RaisePropertyChanged("SearchClass");
@@ -177,7 +177,6 @@ namespace Sikor.ViewModels
 
             this.RaisePropertyChanged("SortOptions");
             this.RaisePropertyChanged("SelectedSorting");
-
             this.RaisePropertyChanged("Issues");
             this.RaisePropertyChanged("Projects");
             this.RaisePropertyChanged("SelectedProject");

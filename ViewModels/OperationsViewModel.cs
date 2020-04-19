@@ -26,12 +26,17 @@ namespace Sikor.ViewModels
         public bool HasFailedStatuses => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedStatusUpdates.Count > 0 : false);
         public bool HasFailedWorklogs => (AppState.ActiveProfile != null ? AppState.ActiveProfile.FailedWorklogs.Count > 0 : false);
         public Issue SelectedIssue => (AppState.ActiveProfile != null ? AppState.ActiveProfile.SelectedIssue : null);
-        public ListableItem SelectedNewStatus { get; set; }
 
+        protected Status selectedNewStatus;
+
+        public Status SelectedNewStatus
+        {
+            get => selectedNewStatus;
+            set => this.RaiseAndSetIfChanged(ref selectedNewStatus, value);
+        }
         public FailedStatusUpdate SelectedFailedStatus { get; set; }
 
         public Tracking SelectedFailedWorklog { get; set; }
-
 
         public int SelectedFailedWorklogIndex { get; set; }
 
@@ -51,7 +56,7 @@ namespace Sikor.ViewModels
             AppState.Loader.Show();
             if ((DateTime.Now - AppState.ActiveProfile.CurrentTracking.Created).TotalMinutes < 1)
             {
-                var result = await Dispatcher.UIThread.InvokeAsync(async () => await  MsgBox.Show("Warning", "Sadly, Jira cannot track anything under a minute. Do you wish to save this tracking as 1 minute [Yes] or continue tracking [Cancel]?", Icon.Warning, ButtonEnum.OkCancel));
+                var result = await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Warning", "Sadly, Jira cannot track anything under a minute. Do you wish to save this tracking as 1 minute [Yes] or continue tracking [Cancel]?", Icon.Warning, ButtonEnum.OkCancel));
                 if (result == ButtonResult.Cancel)
                 {
                     AppState.Loader.Hide();
@@ -75,9 +80,12 @@ namespace Sikor.ViewModels
                     }
                     else
                     {
-                        if (r.Result == OperationResult.SAVED) {
+                        if (r.Result == OperationResult.SAVED)
+                        {
                             await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Worklog successfully saved", Icon.Success, ButtonEnum.Ok));
-                        } else {
+                        }
+                        else
+                        {
                             await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Stored", "Worklog successfully stored for later", Icon.Info, ButtonEnum.Ok));
                         }
                         AppState.ActiveProfile.CurrentTracking = null;
@@ -134,15 +142,21 @@ namespace Sikor.ViewModels
         {
             get
             {
-                if (AppState.ActiveProfile == null) {
+                if (AppState.ActiveProfile == null)
+                {
                     return null;
                 }
-
                 var collection = new ObservableCollection<Status>();
+
+                Status lastStatus = null;
                 foreach (Status status in AppState.ActiveProfile.Statuses.Values)
                 {
                     collection.Add(status);
+                    lastStatus = status;
                 }
+
+                SelectedNewStatus = lastStatus;
+
                 return collection;
             }
         }
@@ -186,10 +200,12 @@ namespace Sikor.ViewModels
             AppState.Profiles.Save();
         }
 
-
         public void UpdateSelectionProperties()
         {
             this.RaisePropertyChanged("Statuses");
+            this.RaisePropertyChanged("IssueStatuses");
+
+            this.RaisePropertyChanged("SelectedNewStatus");
             this.RaisePropertyChanged("SelectedIssue");
             this.RaisePropertyChanged("IsSelected");
         }
@@ -206,7 +222,6 @@ namespace Sikor.ViewModels
             this.RaisePropertyChanged("IsTracking");
             this.RaisePropertyChanged("TrackedIssue");
         }
-
 
         async protected void RemoveFailedStatus()
         {
@@ -252,9 +267,14 @@ namespace Sikor.ViewModels
 
         private void OpenSelected()
         {
+            string uri = AppState.ActiveProfile.Uri;
+            if (!uri.EndsWith('/')) {
+                uri += "/";
+            }
+
             new Process
             {
-                StartInfo = new ProcessStartInfo(AppState.ActiveProfile.Uri + "/browse/" + SelectedIssue.Key)
+                StartInfo = new ProcessStartInfo(uri + "browse/" + SelectedIssue.Key)
                 {
                     UseShellExecute = true
                 }
@@ -303,10 +323,16 @@ namespace Sikor.ViewModels
 
                 }));
         }
-
-        public void SetStatus(bool saveOnFailure = false)
+        async public void SetStatus(bool saveOnFailure = false)
         {
             AppState.Loader.Show();
+
+            if (SelectedNewStatus == null || SelectedNewStatus.Key == "-1")
+            {
+                await MsgBox.Show("Error", "Select a new status first.", Icon.Error, ButtonEnum.Ok);
+                AppState.Loader.Hide();
+                return;
+            }
 
             string issueKey = SelectedIssue.Key;
             string summary = SelectedIssue.Summary;
@@ -321,14 +347,19 @@ namespace Sikor.ViewModels
                         if (result != ButtonResult.Abort)
                         {
                             SetStatus(result == ButtonResult.Yes);
+                            return;
                         }
+                        AppState.Loader.Hide();
                         return;
                     }
                     else
                     {
-                        if (OperationResult.SAVED == r.Result) {
+                        if (OperationResult.SAVED == r.Result)
+                        {
                             await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Status successfully updated", Icon.Success, ButtonEnum.Ok));
-                        } else {
+                        }
+                        else
+                        {
                             await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Stored", "Status successfully stored for later", Icon.Info, ButtonEnum.Ok));
                         }
                         UpdateStatusProperties();

@@ -13,7 +13,6 @@ namespace Sikor.ViewModels
 {
     public class ProfileSelectorViewModel : ReactiveViewServiceProvider
     {
-
         public ObservableCollection<ListableItem> ProfileItems
         {
             get

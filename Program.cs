@@ -1,15 +1,9 @@
-using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
-using Sentry;
 using Sikor.Services;
-using Atlassian.Jira;
-using Sikor.Repository;
-using Sikor.Model;
 using System.IO;
-using Sikor.Container;
 
 namespace Sikor
 {
@@ -32,11 +26,13 @@ namespace Sikor
 
             Sikor.Container.IServiceProvider[] services = {
                 new Storage(),
+                new Logger(),
                 new JiraWrapper(),
                 appState
             };
 
-            foreach (Sikor.Container.IServiceProvider service in services){
+            foreach (Sikor.Container.IServiceProvider service in services)
+            {
                 service.Register();
             }
 
@@ -48,8 +44,10 @@ namespace Sikor
             //Ui.StartWithClassicDesktopLifetime(args);
             appState.PostInit();
 
-            foreach (Sikor.Container.IServiceProvider service in services){
-                if (service.GetTypeString() == typeof(AppState).ToString()) {
+            foreach (Sikor.Container.IServiceProvider service in services)
+            {
+                if (service.GetTypeString() == typeof(AppState).ToString())
+                {
                     continue; //skip appsstate
                 }
 
@@ -57,13 +55,6 @@ namespace Sikor
             }
 
             lifetime.Start(args);
-
-
-/*
-            using (SentrySdk.Init("https://79e453ed4dbd49a68acfd59bbe587d23@sentry.io/5166734"))
-            {
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            } */
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

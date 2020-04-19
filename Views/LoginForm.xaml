@@ -1,35 +1,18 @@
-﻿<UserControl
-    xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    xmlns:views="clr-namespace:Sikor.Views"
-    d:DesignWidth="800"
-        xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
-    d:DesignHeight="450"
-    x:Class="Sikor.Views.LoginForm">
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    xmlns:views="clr-namespace:Sikor.Views" d:DesignWidth="800"
+    xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor" d:DesignHeight="450" x:Class="Sikor.Views.LoginForm">
 
-    <StackPanel
-        Orientation="Vertical"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"
-        >
-        <Image
-            Source="avares://Sikor/Assets/timer-outline.png"
-            Width="64"
-            Height="64"
-            VerticalAlignment="Top" />
-        <TextBlock
-            Text="Sikor"
-            FontFamily="OpenSans"
-            HorizontalAlignment="Center"
-            FontSize="32" />
-      <views:ProfileSelector></views:ProfileSelector>
-      <views:ProfileCreator></views:ProfileCreator>
-      <StackPanel Orientation="Horizontal">
-        <TextBlock>Version: </TextBlock>
-        <TextBlock Text="{Binding Version}"></TextBlock>
-      </StackPanel>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image Source="avares://Sikor/Assets/timer-outline.png" Width="64" Height="64" VerticalAlignment="Top" />
+        <TextBlock Text="Sikor" FontFamily="OpenSans" HorizontalAlignment="Center" FontSize="32" />
+        <views:ProfileSelector></views:ProfileSelector>
+        <views:ProfileCreator></views:ProfileCreator>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock>Version: </TextBlock>
+            <TextBlock Text="{Binding Version}"></TextBlock>
+        </StackPanel>
     </StackPanel>
 </UserControl>

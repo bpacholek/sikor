@@ -1,25 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    xmlns:views="clr-namespace:Sikor.Views"
-             x:Class="Sikor.Views.TabbedView">
-  <DockPanel  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <Border
-  Background="#6c51a4"
-  BorderBrush="Black"
-  BorderThickness="0 0 0 0"
-  Padding="4">
-      <Border
-  Background="#6c51a4"
-  BorderBrush="Black"
-  BorderThickness="1"
-  Padding="0">
-      <ScrollViewer>
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+  xmlns:views="clr-namespace:Sikor.Views" x:Class="Sikor.Views.TabbedView">
+  <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Border Background="#6c51a4" BorderBrush="Black" BorderThickness="0 0 0 0" Padding="4">
+      <Border Background="#6c51a4" BorderBrush="Black" BorderThickness="1" Padding="0">
+        <ScrollViewer>
           <views:Operations></views:Operations>
-      </ScrollViewer>
-        </Border>
+        </ScrollViewer>
+      </Border>
     </Border>
   </DockPanel>
 </UserControl>

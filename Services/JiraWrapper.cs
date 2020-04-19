@@ -61,6 +61,7 @@ namespace Sikor.Services
             }
             catch (Exception e)
             {
+                AppState.Logger.Log(this, "StoreWorklog", e.Message);
                 if (!saveOnFailure)
                 {
                     return OperationResult.FAILED;
@@ -95,6 +96,7 @@ namespace Sikor.Services
             }
             catch (Exception e)
             {
+                AppState.Logger.Log(this, "SetStatus", e.Message);
                 if (!saveOnFailure)
                 {
                     return OperationResult.FAILED;
@@ -168,6 +170,7 @@ namespace Sikor.Services
             }
             catch (Exception e)
             {
+                AppState.Logger.Log(this, "Search", e.Message);
                 var issues = new ObservableCollection<Issue>();
                 foreach (Issue item in profile.Issues.Values)
                 {
@@ -288,10 +291,12 @@ namespace Sikor.Services
             }
             catch (AuthenticationException e)
             {
+                AppState.Logger.Log(this, "Login,Auth", e.Message);
                 return LoginState.INVALID_CREDENTIALS;
             }
             catch (Exception e)
             {
+                AppState.Logger.Log(this, "Login,Other", e.Message);
                 return LoginState.NETWORK_ERROR;
             }
 

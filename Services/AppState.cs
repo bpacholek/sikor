@@ -22,6 +22,7 @@ namespace Sikor.Services
 
         public Settings Settings;
 
+        public Logger Logger;
         public Profiles Profiles;
 
         public void SelectIssue(Issue issue)
@@ -35,8 +36,8 @@ namespace Sikor.Services
         {
             MainWindow = ServiceContainer.GetServiceTyped<MainWindowViewModel>(typeof(MainWindowViewModel).ToString());
             Sidebar = ServiceContainer.GetServiceTyped<SidebarViewModel>(typeof(SidebarViewModel).ToString());
+            Logger = ServiceContainer.GetServiceTyped<Logger>(typeof(Logger).ToString());
             Operations = ServiceContainer.GetServiceTyped<OperationsViewModel>(typeof(OperationsViewModel).ToString());
-
             Loader = ServiceContainer.GetServiceTyped<FullLoaderViewModel>(typeof(FullLoaderViewModel).ToString());
             ProfileSelector = ServiceContainer.GetServiceTyped<ProfileSelectorViewModel>(typeof(ProfileSelectorViewModel).ToString());
             Jira = ServiceContainer.GetServiceTyped<JiraWrapper>(typeof(JiraWrapper).ToString());
