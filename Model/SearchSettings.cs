@@ -59,7 +59,7 @@ namespace Sikor.Model
 
             if (Summary != "")
             {
-                parameters.Add("Summary ~ \"" + Summary.Replace('"', ' ') + "\"");
+                parameters.Add("Summary ~ \"" + Summary.Replace('"', ' ') + "~\"");
             }
 
             if (ExcludeResolved == true)

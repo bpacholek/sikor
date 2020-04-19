@@ -1,17 +1,9 @@
-﻿using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ReactiveUI;
 using System.Collections.ObjectModel;
-using Atlassian.Jira;
 using Sikor.Services;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Sikor.Model;
-using Sikor.Repository;
-using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia;
 using Sikor.Util.Ui;
 using Sikor.Container;
 using Sikor.Enum;
@@ -23,8 +15,10 @@ namespace Sikor.ViewModels
 
         public ObservableCollection<ListableItem> ProfileItems
         {
-            get {
-                if (AppState.Profiles == null) {
+            get
+            {
+                if (AppState.Profiles == null)
+                {
                     return null;
                 }
 
@@ -58,7 +52,8 @@ namespace Sikor.ViewModels
         }
 
         protected ListableItem selectedProfile;
-        public ListableItem SelectedProfile {
+        public ListableItem SelectedProfile
+        {
             get => selectedProfile;
             set => this.RaiseAndSetIfChanged(ref selectedProfile, value);
         }
@@ -105,28 +100,30 @@ namespace Sikor.ViewModels
 
             var selectedProfile = AppState.Profiles.Get(SelectedProfile.Key);
             _ = Task.Run(() => AppState.Jira.Login(selectedProfile)).ContinueWith(
-                async r => {
-                    switch(r.Result)
+                async r =>
+                {
+                    switch (r.Result)
                     {
                         case LoginState.SUCCESS:
                             AppState.Login(selectedProfile);
-                        break;
+                            break;
                         case LoginState.INVALID_CREDENTIALS:
                             await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden);
-                        break;
+                            break;
                         case LoginState.NETWORK_ERROR:
                             var result = await MsgBox.Show("Network connection", "Could not verify your login information due to network connection issues,\r\nyet if you are certain of your access details you may continue and try to operate on previously cached projects and issues.\r\nThis will allow you to track progress of your work offline and upload it when network connection is available.\r\nDo you want to continue?", Icon.Warning, ButtonEnum.YesNo);
                             if (result == ButtonResult.No)
                             {
                                 //do nothing
-                            } else
+                            }
+                            else
                             {
                                 AppState.Login(selectedProfile);
                             }
-                        break;
+                            break;
                     }
                     AppState.Loader.Hide();
-            });
+                });
         }
 
 

@@ -17,7 +17,7 @@ namespace Sikor.Model
          * </summary>
          * <value>string, Jira Key of a project (ABC-)</value>
          */
-        public string Shortcut { get; set; }
+//        public string Shortcut { get; set; }
 
     }
 }

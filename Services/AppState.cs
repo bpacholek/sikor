@@ -65,8 +65,7 @@ namespace Sikor.Services
         public void Login(Profile profile)
         {
             ActiveProfile = profile;
-            //sidebar.Init();
-            //currentTracking.init();
+            Sidebar.PostInit();
             MainWindow.LoginFormVisible = false;
         }
 

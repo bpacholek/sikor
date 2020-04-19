@@ -30,5 +30,10 @@ namespace Sikor.Model
             return this.Value;
         }}
 
+        public override string ToString()
+        {
+            return this.Value;
+        }
+
     }
 }

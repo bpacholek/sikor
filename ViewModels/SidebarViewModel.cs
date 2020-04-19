@@ -1,4 +1,4 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,10 +19,17 @@ namespace Sikor.ViewModels
 {
     public class SidebarViewModel : ReactiveViewServiceProvider
     {
-        public ObservableCollection<Status> Statuses {
-            get {
+        public ObservableCollection<Status> Statuses
+        {
+            get
+            {
+                if (AppState.ActiveProfile == null)
+                {
+                    return null;
+                }
                 var statuses = new ObservableCollection<Status>();
-                foreach(Status status in AppState.ActiveProfile.Statuses.Values) {
+                foreach (Status status in AppState.ActiveProfile.Statuses.Values)
+                {
                     statuses.Add(status);
                 }
 
@@ -44,20 +51,26 @@ namespace Sikor.ViewModels
                 AppState.SelectIssue(value);
             }
         }
-        public ObservableCollection<Project> Projects {
-            get {
+        public ObservableCollection<Project> Projects
+        {
+            get
+            {
+                if (AppState.ActiveProfile == null)
+                {
+                    return null;
+                }
+
                 var profileProjects = new ObservableCollection<Project>();
 
                 Project Any = new Project()
                 {
                     Key = "-1",
-                    Value = "-- any --",
-                    Shortcut = ""
+                    Value = "-- any --"
                 };
-
                 profileProjects.Add(Any);
 
-                if (SelectedProject == null || !AppState.ActiveProfile.Projects.ContainsKey(SelectedProject.Key)) {
+                if (SelectedProject == null || !AppState.ActiveProfile.Projects.ContainsKey(SelectedProject.Key))
+                {
                     SelectedProject = Any;
                 }
 
@@ -69,19 +82,27 @@ namespace Sikor.ViewModels
                 return profileProjects;
             }
         }
-        public ListableItem SelectedSorting { get; private set; }
-        public ObservableCollection<ListableItem> SortOptions { get {
-            //not selected
-            var first = new ListableItem() {
+
+        protected ListableItem selectedSorting;
+
+        public ListableItem SelectedSorting {
+            get => selectedSorting;
+            set => this.RaiseAndSetIfChanged(ref selectedSorting, value);
+        }
+        public ObservableCollection<ListableItem> SortOptions
+        {
+            get
+            {
+                //not selected
+                var first = new ListableItem()
+                {
                     Value = "Last viewed, desc",
                     Key = "LastViewed_DESC"
                 };
 
-            if (SelectedSorting == null) {
-                SelectedSorting = first;
-            }
+                selectedSorting = first;
 
-            return new ObservableCollection<ListableItem> {
+                return new ObservableCollection<ListableItem> {
                 first,
                 new ListableItem() {
                     Value = "Last viewed, asc",
@@ -104,12 +125,15 @@ namespace Sikor.ViewModels
                     Key = "TimeSpent_asc"
                 }
             };
-        } }
+            }
+        }
 
         protected string searchString;
-        public string IssueSearchText {
+        public string IssueSearchText
+        {
             get { return searchString; }
-            set {
+            set
+            {
                 searchString = value;
                 if (searchString.Length > 2)
                 {
@@ -136,17 +160,18 @@ namespace Sikor.ViewModels
 
         public Project SelectedProject { get; set; }
 
-        public void Reload()
+        public override void PostInit()
         {
             SearchOnlyCurrentUsersIssues = false;
             searchString = "";
 
             this.RaisePropertyChanged("SortOptions");
+            this.RaisePropertyChanged("SelectedSorting");
+
             this.RaisePropertyChanged("Issues");
             this.RaisePropertyChanged("Projects");
             this.RaisePropertyChanged("SelectedProject");
-            this.RaisePropertyChanged("IssueStatuses");
-
+            this.RaisePropertyChanged("Statuses");
         }
     }
 }
