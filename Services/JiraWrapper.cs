@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -8,7 +8,6 @@ using JiraStatus = Atlassian.Jira.IssueStatus;
 using JiraProject = Atlassian.Jira.Project;
 using JiraWorklog = Atlassian.Jira.Worklog;
 using Sikor.Model;
-using Sikor.Repository;
 using System.Security.Authentication;
 using Sikor.Enum;
 using Sikor.Container;
@@ -38,7 +37,7 @@ namespace Sikor.Services
          * <param name="saveOnFailure"></param>
          * <returns></returns>
          */
-        async public Task<bool> StoreWorklog(Tracking tracking, bool saveOnFailure = false)
+        async public Task<OperationResult> StoreWorklog(Tracking tracking, bool saveOnFailure = false)
         {
             try
             {
@@ -46,7 +45,7 @@ namespace Sikor.Services
                     tracking.To = DateTime.Now;
                 }
 
-                var jiraIssue = await jira.Issues.GetIssueAsync(tracking.IssueKey);
+                var jiraIssue = await jira.Issues.GetIssueAsync(tracking.Key);
                 double totalMinutes = Math.Round((tracking.To - tracking.Created).TotalMinutes);
                 if (totalMinutes < 1)
                 {
@@ -63,14 +62,15 @@ namespace Sikor.Services
             {
                 if (!saveOnFailure)
                 {
-                    return false;
+                    return OperationResult.FAILED;
                 }
 
                 AppState.ActiveProfile.FailedWorklogs.Add(tracking);
                 AppState.Profiles.Save();
+                return OperationResult.STORED;
             }
 
-            return true;
+            return OperationResult.SAVED;
 
         }
 
@@ -84,7 +84,7 @@ namespace Sikor.Services
          * <param name="retry"></param>
          * <returns></returns>
          */
-        async public Task<bool> SetStatus(string issueKey, string summary, string status, bool saveOnFailure = false)
+        async public Task<OperationResult> SetStatus(string issueKey, string summary, string status, bool saveOnFailure = false)
         {
             try
             {
@@ -96,22 +96,23 @@ namespace Sikor.Services
             {
                 if (!saveOnFailure)
                 {
-                    return false;
+                    return OperationResult.FAILED;
                 }
 
                 var failedStatusOperation = new FailedStatusUpdate()
                 {
                     Created = DateTime.Now,
-                    IssueKey = issueKey,
+                    Key = issueKey,
                     Summary = summary,
                     Status = status
                 };
 
                 AppState.ActiveProfile.FailedStatusUpdates.Add(failedStatusOperation);
                 AppState.Profiles.Save();
+                return OperationResult.STORED;
             }
 
-            return true;
+            return OperationResult.SAVED;
         }
 
         /**
@@ -126,7 +127,7 @@ namespace Sikor.Services
          * <param name="profile"></param>
          * <returns></returns>
          */
-        async public Task<ObservableCollection<Issue>> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
+        async public Task<SearchResults> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
         {
             try
             {
@@ -141,7 +142,7 @@ namespace Sikor.Services
 
                 var results = await jira.Issues.GetIssuesFromJqlAsync(SearchParams.ToString());
 
-                var output = new ObservableCollection<Issue>();
+                var issues = new ObservableCollection<Issue>();
                 foreach (JiraIssue issue in results)
                 {
                     Issue item = new Issue();
@@ -149,15 +150,22 @@ namespace Sikor.Services
                     item.ProjectKey = issue.Project;
                     item.Key = issue.Key.Value;
                     item.Value = issue.Summary;
-                    output.Add(item);
+                    item.Summary = issue.Summary;
+                    issues.Add(item);
                     profile.Issues[item.Key] = item;
                 }
 
-                return output;
+                var searchResults = new SearchResults()
+                {
+                    Offline = false,
+                    Issues = issues
+                };
+
+                return searchResults;
             }
             catch (Exception e)
             {
-                var output = new ObservableCollection<Issue>();
+                var issues = new ObservableCollection<Issue>();
                 foreach (Issue item in profile.Issues.Values)
                 {
 
@@ -176,10 +184,17 @@ namespace Sikor.Services
                         continue;
                     }
 
-                    output.Add(item);
+                    issues.Add(item);
                 }
 
-                return output;
+                var searchResults = new SearchResults()
+                {
+                    Offline = true,
+                    Issues = issues
+                };
+
+
+                return searchResults;
             }
 
         }

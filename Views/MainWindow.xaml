@@ -8,6 +8,20 @@
     <Style Selector="TextBlock">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
     </Style>
+
+    <Style Selector="TextBlock.SearchIdle">
+      <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+    <Style Selector="TextBlock.Searching">
+      <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+    <Style Selector="TextBlock.SearchOnline">
+      <Setter Property="Foreground" Value="#339d00"/>
+    </Style>
+    <Style Selector="TextBlock.SearchOffline">
+      <Setter Property="Foreground" Value="#b61111"/>
+    </Style>
+
     <Style Selector="Button">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
     </Style>

@@ -1,19 +1,11 @@
 using ReactiveUI;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Collections.ObjectModel;
-//using Atlassian.Jira;
 using Sikor.Services;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Sikor.Model;
-using Sikor.Repository;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia;
-using Sikor.Util;
 using Sikor.Container;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 
 namespace Sikor.ViewModels
 {
@@ -85,7 +77,8 @@ namespace Sikor.ViewModels
 
         protected ListableItem selectedSorting;
 
-        public ListableItem SelectedSorting {
+        public ListableItem SelectedSorting
+        {
             get => selectedSorting;
             set => this.RaiseAndSetIfChanged(ref selectedSorting, value);
         }
@@ -128,6 +121,10 @@ namespace Sikor.ViewModels
             }
         }
 
+        public string SearchClass {get; private set;}
+        public string SearchText {get; private set;}
+
+
         protected string searchString;
         public string IssueSearchText
         {
@@ -137,12 +134,12 @@ namespace Sikor.ViewModels
                 searchString = value;
                 if (searchString.Length > 2)
                 {
-                    search();
+                    Search();
                 }
             }
         }
 
-        async protected void search()
+        public void Search()
         {
             var selectedStatuses = new List<string>();
             foreach (Status status in AppState.ActiveProfile.Statuses.Values)
@@ -152,18 +149,31 @@ namespace Sikor.ViewModels
                     selectedStatuses.Add(status.Key);
                 }
             }
+            UpdateSearchProperties("Searching", "Searching");
 
-            Issues = await AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile);
-            this.RaisePropertyChanged("Issues");
+            _ = Task.Run(() => AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile).ContinueWith(
+                r =>
+                {
+                    Issues = r.Result.Issues;
+                    UpdateSearchProperties("Results", "Finished " + (r.Result.Offline ? "OFFLINE" : "ONLINE"));
+                }));
         }
 
-
+        protected void UpdateSearchProperties(string style, string text) {
+            SearchClass = style;
+            SearchText = text;
+            this.RaisePropertyChanged("SearchClass");
+            this.RaisePropertyChanged("SearchText");
+            this.RaisePropertyChanged("Issues");
+        }
         public Project SelectedProject { get; set; }
 
         public override void PostInit()
         {
             SearchOnlyCurrentUsersIssues = false;
             searchString = "";
+
+            UpdateSearchProperties("Idle", "Idle");
 
             this.RaisePropertyChanged("SortOptions");
             this.RaisePropertyChanged("SelectedSorting");

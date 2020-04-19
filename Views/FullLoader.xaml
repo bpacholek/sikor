@@ -8,8 +8,8 @@
   <UserControl.DataContext>
     <vm:FullLoaderViewModel></vm:FullLoaderViewModel>
   </UserControl.DataContext>
-             
-  <Panel IsVisible="{Binding LoaderVisible}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="50" Opacity="0.8" Background="#000000"> 
+
+  <Panel IsVisible="{Binding LoaderVisible}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="50" Opacity="0.8" Background="#000000">
     <DockPanel ZIndex="50">
         <TextBlock ZIndex="50" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#ffffff" FontSize="24" Opacity="1">Please wait while loading...</TextBlock>
     </DockPanel>

@@ -1,4 +1,4 @@
-﻿using Sikor.ViewModels;
+using Sikor.ViewModels;
 using Sikor.Container;
 using Sikor.Model;
 using Sikor.Repository;
@@ -25,7 +25,7 @@ namespace Sikor.Services
         public void SelectIssue(Issue issue)
         {
             ActiveProfile.SelectedIssue = issue;
-            Operations.SelectIssue(issue);
+            Operations.UpdateSelectionProperties();
         }
 
         public Profiles Profiles;
@@ -66,6 +66,7 @@ namespace Sikor.Services
         {
             ActiveProfile = profile;
             Sidebar.PostInit();
+            Operations.PostInit();
             MainWindow.LoginFormVisible = false;
         }
 

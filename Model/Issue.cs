@@ -65,7 +65,7 @@ namespace Sikor.Model
          * </todo>
          * <value>Issue's Jira Key</value>
          */
-        public string IssueKey { set; get; }
+        public string IssueKey => Key;
 
         /**
          * <summary>

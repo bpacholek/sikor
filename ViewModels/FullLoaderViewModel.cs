@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ReactiveUI;
-using Sikor.Services;
 using Sikor.Container;
 
 namespace Sikor.ViewModels

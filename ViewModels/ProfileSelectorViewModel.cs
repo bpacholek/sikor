@@ -7,6 +7,7 @@ using MessageBox.Avalonia.Enums;
 using Sikor.Util.Ui;
 using Sikor.Container;
 using Sikor.Enum;
+using Avalonia.Threading;
 
 namespace Sikor.ViewModels
 {
@@ -108,10 +109,10 @@ namespace Sikor.ViewModels
                             AppState.Login(selectedProfile);
                             break;
                         case LoginState.INVALID_CREDENTIALS:
-                            await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden);
+                            await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden));
                             break;
                         case LoginState.NETWORK_ERROR:
-                            var result = await MsgBox.Show("Network connection", "Could not verify your login information due to network connection issues,\r\nyet if you are certain of your access details you may continue and try to operate on previously cached projects and issues.\r\nThis will allow you to track progress of your work offline and upload it when network connection is available.\r\nDo you want to continue?", Icon.Warning, ButtonEnum.YesNo);
+                            var result = await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Network connection", "Could not verify your login information due to network connection issues,\r\nyet if you are certain of your access details you may continue and try to operate on previously cached projects and issues.\r\nThis will allow you to track progress of your work offline and upload it when network connection is available.\r\nDo you want to continue?", Icon.Warning, ButtonEnum.YesNo));
                             if (result == ButtonResult.No)
                             {
                                 //do nothing

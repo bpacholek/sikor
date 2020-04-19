@@ -1,4 +1,4 @@
-﻿using Sikor.Container;
+using Sikor.Container;
 using System;
 
 namespace Sikor.Model

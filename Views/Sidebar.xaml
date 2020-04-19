@@ -24,8 +24,12 @@
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
-        <TextBox DockPanel.Dock="Top" Text="{Binding IssueSearchText, Mode=TwoWay}"></TextBox>
-        <ListBox DockPanel.Dock="Top" SelectionMode="Single" VerticalAlignment="Stretch" ClipToBounds="True" Name="Issues" SelectedItem="{Binding SelectedIssue, Mode=TwoWay}" Items="{Binding Issues}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" UseLayoutRounding="True">
+        <Grid ColumnDefinitions="*, 40" RowDefinitions="*, 20"   DockPanel.Dock="Top" HorizontalAlignment="Stretch">
+          <TextBox Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Text="{Binding IssueSearchText, Mode=TwoWay}"></TextBox>
+          <Button Grid.Column="1" Grid.Row="0" Width="40"  Command="{Binding Search}"><Image Source="avares://Sikor/Assets/search-solid.png" Width="16" Height="16"></Image></Button>
+          <TextBlock Classes="SearchIdle" Grid.Column="0" Margin="0 5 0 5" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" TextAlignment="Center"  VerticalAlignment="Center" Text="{Binding SearchText}"></TextBlock>
+        </Grid>
+        <ListBox DockPanel.Dock="Top" SelectionMode="Single" VerticalAlignment="Stretch" ZIndex="1" ClipToBounds="True" Name="Issues" SelectedItem="{Binding SelectedIssue, Mode=TwoWay}" Items="{Binding Issues}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" UseLayoutRounding="True">
           <ListBox.ItemTemplate>
             <DataTemplate SupportsRecycling="True">
               <Border BorderBrush="#6c51a4" BorderThickness="4 0 0 0">
