@@ -1,5 +1,8 @@
+using System;
+
 namespace Sikor.Container
 {
+    [Serializable]
     abstract public class ServiceProvider : IServiceProvider
     {
         public virtual void Register()

@@ -6,7 +6,7 @@
   <UserControl.DataContext>
     <vm:ProfileSelectorViewModel/>
   </UserControl.DataContext>
-  <Border Background="#6c51a4" BorderBrush="Black" BorderThickness="1" CornerRadius="4" Padding="4">
+  <Border Classes="bgaccent" BorderBrush="Black" BorderThickness="1" CornerRadius="4" Padding="4">
     <StackPanel Width="200">
       <TextBlock Classes="header">Select profile</TextBlock>
       <ComboBox Background="#ffffff" Items="{Binding ProfileItems}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" Name="ProfileItems">

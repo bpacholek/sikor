@@ -1,19 +1,18 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
-        xmlns:views="clr-namespace:Sikor.Views"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Sikor.Views.MainWindow"
-        Icon="/Assets/violet.ico"
-        Title="Sikor">
+<Window xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
+  xmlns:views="clr-namespace:Sikor.Views"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="Sikor.Views.MainWindow" Icon="/Assets/violet.ico" Title="Sikor">
   <Window.Styles>
     <Style Selector="TextBlock">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
     </Style>
     <Style Selector="Button">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
+    </Style>
+    <Style Selector="Border.bgaccent">
+      <Setter Property="Background" Value="#6c51a4"/>
     </Style>
     <Style Selector="TextBlock.header">
       <Setter Property="FontSize" Value="16"/>
@@ -42,7 +41,7 @@
     <vm:MainWindowViewModel/>
   </Design.DataContext>
 
-  <Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+  <Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
     <views:FullLoader ZIndex="50"></views:FullLoader>
     <Grid ColumnDefinitions="300,*" RowDefinitions="*" IsVisible="{Binding !LoginFormVisible}" VerticalAlignment="Stretch" Background="#ffffff" HorizontalAlignment="Stretch">
       <views:Sidebar Grid.Column="0" Grid.Row="0"></views:Sidebar>
@@ -51,6 +50,6 @@
 
     <views:LoginForm IsVisible="{Binding LoginFormVisible}">
     </views:LoginForm>
-    
+
   </Panel>
 </Window>

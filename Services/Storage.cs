@@ -24,8 +24,8 @@ namespace Sikor.Services
         string Folder;
         public Storage()
         {
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string storagePath = path + Path.DirectorySeparatorChar + "storage";
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string storagePath = path + Path.DirectorySeparatorChar + ".sikor";
             if (Directory.Exists(storagePath))
             {
                 Folder = storagePath;

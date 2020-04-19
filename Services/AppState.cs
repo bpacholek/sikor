@@ -48,12 +48,16 @@ namespace Sikor.Services
                 Settings = new Settings();
             }
 
+            Settings.Init();
+
             var profilesName = typeof(Profiles).ToString();
             if (storage.Has(profilesName)) {
                 Profiles = storage.Get<Profiles>(profilesName);
             } else {
                 Profiles = new Profiles();
             }
+
+            Profiles.Init();
 
             ProfileSelector.ReloadProfiles();
         }
@@ -65,6 +69,7 @@ namespace Sikor.Services
             //currentTracking.init();
             MainWindow.LoginFormVisible = false;
         }
+
 
     }
 }

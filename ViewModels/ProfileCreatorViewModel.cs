@@ -15,6 +15,7 @@ using MessageBox.Avalonia;
 using Sikor.Container;
 using Sikor.Util.Ui;
 using Sikor.Enum;
+using Avalonia.Threading;
 
 namespace Sikor.ViewModels
 {
@@ -28,22 +29,23 @@ namespace Sikor.ViewModels
                 async r => {
                     if (r.IsFaulted)
                     {
-                        _ = await MsgBox.Show("Input validation errors", r.Exception.InnerExceptions[0].Message, Icon.Error);
+                        await Dispatcher.UIThread.InvokeAsync( async () => await MsgBox.Show("Input validation errors", r.Exception.InnerExceptions[0].Message, Icon.Error) );
                     } else {
                         switch(r.Result)
                         {
                             case LoginState.SUCCESS:
-                                await MsgBox.Show("Success", "New profile created successfully!", Icon.Success);
+                                await Dispatcher.UIThread.InvokeAsync( async () => await MsgBox.Show("Success", "New profile created successfully!", Icon.Success) );
+                                AppState.ProfileSelector.ReloadProfiles(); //TODO make a meta-method
                             break;
                             case LoginState.INVALID_CREDENTIALS:
-                                await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden);
+                                await Dispatcher.UIThread.InvokeAsync( async () => await MsgBox.Show("Invalid credentials", "Invalid credentials!", Icon.Forbidden) );
                             break;
                             case LoginState.NETWORK_ERROR:
-                                await MsgBox.Show("Connection problems", "Could not connect: please check the URL and your network connection.", Icon.Error);
+                                await Dispatcher.UIThread.InvokeAsync( async () => await MsgBox.Show("Connection problems", "Could not connect: please check the URL and your network connection.", Icon.Error) );
                             break;
                         }
-                        AppState.Loader.Hide();
                     }
+                    AppState.Loader.Hide();
             });
         }
 

@@ -35,7 +35,6 @@ namespace Sikor.ViewModels
                 item.Value = "- select profile -";
                 item.Key = "-1";
                 profileItems.Add(item);
-
                 ListableItem selected = item;
 
                 foreach (string id in profilesList.Keys)
@@ -52,26 +51,22 @@ namespace Sikor.ViewModels
                     profileItems.Add(item);
                 }
 
-                selectedProfile = selected;
+                SelectedProfile = selected;
                 return profileItems;
             }
+
         }
 
         protected ListableItem selectedProfile;
-        public ListableItem SelectedProfile
-        {
+        public ListableItem SelectedProfile {
             get => selectedProfile;
-            set {
-                if (value != null)
-                {
-                    this.RaiseAndSetIfChanged(ref selectedProfile, value);
-                }
-            }
+            set => this.RaiseAndSetIfChanged(ref selectedProfile, value);
         }
 
         public void ReloadProfiles()
         {
             this.RaisePropertyChanged("ProfileItems");
+            this.RaisePropertyChanged("SelectedProfile");
         }
 
         async public void DeleteSelected()
@@ -87,8 +82,9 @@ namespace Sikor.ViewModels
             var result = await MsgBox.Show("Profile deletion", "Are you sure that you want to remove the selected project?", Icon.Warning, ButtonEnum.YesNo);
             if (result == ButtonResult.Yes)
             {
+                AppState.Profiles.DeleteByKey(selectedProfile.Key);
                 //TODO move out of view model
-                selectedProfile = null;
+                SelectedProfile = null;
                 AppState.Settings.LastSelectedProfile = null;
                 AppState.Settings.Save();
                 AppState.Profiles.Save();
