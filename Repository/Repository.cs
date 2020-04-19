@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using Sikor.Model;
-using Sikor.Services;
 using Sikor.Container;
 
 namespace Sikor.Repository
 {
     [Serializable]
-    abstract public class Repository<T> : StorableServiceProvider where T: IStorable
+    abstract public class Repository<T> : StorableServiceProvider where T : IStorable
     {
         protected Dictionary<string, T> items;
 
@@ -40,8 +36,6 @@ namespace Sikor.Repository
         {
             items.Add(project.GetId(), project);
         }
-
-
 
     }
 }

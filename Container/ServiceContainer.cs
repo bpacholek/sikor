@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using Sikor.Services;
 
 namespace Sikor.Container
 {
@@ -34,7 +31,8 @@ namespace Sikor.Container
 
         public static void Init()
         {
-            foreach(IServiceProvider service in Services.Values) {
+            foreach (IServiceProvider service in Services.Values)
+            {
                 service.Init();
             }
         }

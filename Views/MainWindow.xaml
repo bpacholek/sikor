@@ -8,7 +8,6 @@
     <Style Selector="TextBlock">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
     </Style>
-
     <Style Selector="TextBlock.SearchIdle">
       <Setter Property="Foreground" Value="#ffffff"/>
     </Style>
@@ -21,7 +20,6 @@
     <Style Selector="TextBlock.SearchOffline">
       <Setter Property="Foreground" Value="#b61111"/>
     </Style>
-
     <Style Selector="Button">
       <Setter Property="FontFamily" Value="Arial, Helvetica"/>
     </Style>
@@ -54,16 +52,13 @@
   <Design.DataContext>
     <vm:MainWindowViewModel/>
   </Design.DataContext>
-
   <Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
     <views:FullLoader ZIndex="50"></views:FullLoader>
     <Grid ColumnDefinitions="300,*" RowDefinitions="*" IsVisible="{Binding !LoginFormVisible}" VerticalAlignment="Stretch" Background="#ffffff" HorizontalAlignment="Stretch">
       <views:Sidebar Grid.Column="0" Grid.Row="0"></views:Sidebar>
       <views:TabbedView Grid.Column="1" Grid.Row="0"></views:TabbedView>
     </Grid>
-
     <views:LoginForm IsVisible="{Binding LoginFormVisible}">
     </views:LoginForm>
-
   </Panel>
 </Window>

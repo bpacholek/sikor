@@ -26,9 +26,13 @@ namespace Sikor.Model
          */
         public string Value { get; set; }
 
-        public string Name { get {
-            return this.Value;
-        }}
+        public string Name
+        {
+            get
+            {
+                return this.Value;
+            }
+        }
 
         public override string ToString()
         {

@@ -17,7 +17,8 @@ namespace Sikor.Model
          * </summary>
          */
         public bool selected;
-        public bool Selected {
+        public bool Selected
+        {
             get => selected;
             set
             {

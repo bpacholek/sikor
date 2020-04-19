@@ -1,11 +1,4 @@
-using ReactiveUI;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Sikor.Services;
-using Sikor.Model;
-using Sikor.Container;
-using System.Threading.Tasks;
-using Avalonia.Threading;
 
 namespace Sikor.Model
 {

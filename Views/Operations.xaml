@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -21,7 +21,6 @@
                 <TextBlock Grid.Column="0" Grid.Row="4">Tracking since:</TextBlock>
                 <TextBlock Grid.Column="0" Classes="accented" Grid.Row="5">Tracking time:</TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="6">Comment:</TextBlock>
-
                 <TextBlock Grid.Column="1" Grid.Row="0" Name="TrackedIssue_Name" Text="{Binding TrackedIssue.IssueKey}" TextWrapping="Wrap"></TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="1" Name="TrackedIssue_Summary" Text="{Binding TrackedIssue.Summary}" TextWrapping="Wrap"></TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="2" Name="TrackedIssue_ProjectKey" Text="{Binding TrackedIssue.ProjectKey}" TextWrapping="Wrap"></TextBlock>
@@ -29,7 +28,6 @@
                 <TextBlock Grid.Column="1" Grid.Row="4" Name="TrackedIssue_Created" Text="{Binding TrackedIssue.Created}" TextWrapping="Wrap"></TextBlock>
                 <TextBlock Grid.Column="1" Classes="accented" Grid.Row="5" Name="TrackingTime" Text="{Binding TrackingTime}" TextWrapping="Wrap"></TextBlock>
                 <TextBox Grid.Column="1" Grid.Row="6" Name="TrackedIssue_Comment" Text="{Binding TrackedIssue.Comment, Mode=TwoWay}"></TextBox>
-
                 <Button Grid.RowSpan="7" Grid.Column="3" Grid.Row="0" Command="{Binding StoreTracking}">
                   <StackPanel Orientation="Vertical">
                     <Image Source="avares://Sikor/Assets/save-solid.png" Width="24" Height="24" Margin="5"></Image>
@@ -49,18 +47,20 @@
               <TextBlock Text="Please select an issue in the sidebar on the left!" HorizontalAlignment="Center" Margin="0 0 0 25" />
             </StackPanel>
             <StackPanel IsVisible="{Binding IsSelected}" Orientation="Vertical">
-              <Grid ColumnDefinitions="150, *, 10, 150" RowDefinitions="*,*,*,*,*" Margin="5">
+              <Grid ColumnDefinitions="150, *, 10, 150" RowDefinitions="*,*,*,*,*,*" Margin="5">
                 <TextBlock Grid.Column="0" Grid.Row="0">Issue:</TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="1">Project:</TextBlock>
                 <TextBlock Grid.Column="0" Grid.Row="2">Status:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="3">Type:</TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding SelectedIssue.Name}" TextWrapping="Wrap"></TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding SelectedIssue.ProjectKey}" TextWrapping="Wrap"></TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding SelectedIssue.Status}" TextWrapping="Wrap"></TextBlock>
-                <TextBlock Grid.Column="0" Grid.Row="3">Change status to:</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="3" Name="IssueStatuses" Items="{Binding Statuses}" SelectedItem="{Binding SelectedNewStatus}"></ComboBox>
-                <Button Grid.Column="1" Grid.Row="4" Margin="0 5 0 0" Command="{Binding SetStatus}">Set</Button>
-                <Button Grid.Column="3" Grid.Row="4" Margin="0 5 0 0" Command="{Binding OpenSelected}">Open</Button>
-                <Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="4" Command="{Binding StartTracking}">
+                <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding SelectedIssue.Type}" TextWrapping="Wrap"></TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="4">Change status to:</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="4" Name="IssueStatuses" Items="{Binding Statuses}" SelectedItem="{Binding SelectedNewStatus}"></ComboBox>
+                <Button Grid.Column="1" Grid.Row="5" Margin="0 5 0 0" Command="{Binding SetStatus}">Set</Button>
+                <Button Grid.Column="3" Grid.Row="5" Margin="0 5 0 0" Command="{Binding OpenSelected}">Open</Button>
+                <Button Grid.Column="3" Grid.Row="0" Grid.RowSpan="5" Command="{Binding StartTracking}">
                   <StackPanel Orientation="Vertical">
                     <Image Source="avares://Sikor/Assets/play-circle-regular.png" Width="24" Height="24" Margin="5"></Image>
                     <TextBlock>Start tracking</TextBlock>
@@ -70,7 +70,6 @@
             </StackPanel>
           </StackPanel>
         </Border>
-
         <Border Margin="0 5 0 0" Classes="bgaccent" BorderBrush="Black" BorderThickness="1" IsVisible="{Binding HasFailedWorklogs}" Padding="4">
           <StackPanel Orientation="Vertical" Background="#ffffff">
             <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Failed worklogs</TextBlock>
@@ -117,7 +116,6 @@
             </DockPanel>
           </StackPanel>
         </Border>
-
         <Border Margin="0 5 0 0" Classes="bgaccent" BorderBrush="Black" BorderThickness="1" IsVisible="{Binding HasFailedStatuses}" Padding="4">
           <StackPanel Orientation="Vertical" Background="#ffffff">
             <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Failed status updates</TextBlock>
@@ -158,15 +156,12 @@
             </DockPanel>
           </StackPanel>
         </Border>
-
         <Border Margin="0 5 0 0" Classes="bgaccent" BorderBrush="Black" BorderThickness="1" Padding="4">
           <StackPanel Orientation="Vertical" Background="#ffffff">
             <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Information</TextBlock>
             <DockPanel LastChildFill="True">
               <Grid ColumnDefinitions="200, *, 200, 200" RowDefinitions="*" Margin="5">
-
                 <TextBlock TextWrapping="Wrap">This application is provided without any warranty under GPL 3.0 license by IDCT Bartosz Pachołek.</TextBlock>
-
                 <Button Grid.Column="2" Grid.Row="0" Command="{Binding OpenFontAwesome}" Margin="0 0 5 0">
                   <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Sikor uses contents provided</TextBlock>
@@ -174,8 +169,7 @@
                     <TextBlock HorizontalAlignment="Center" TextAlignment="Center">by FontAwesome under its license</TextBlock>
                   </StackPanel>
                 </Button>
-
-                <Button Grid.Column="3" Grid.Row="0" Command="{Binding OpenMantis}">
+                <Button Grid.Column="3" Grid.Row="0" Command="{Binding OpenGithub}">
                   <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Found a bug?</TextBlock>
                     <Image HorizontalAlignment="Center" Source="avares://Sikor/Assets/github-brands.png" Width="24" Height="24" Margin="5"></Image>
@@ -186,11 +180,7 @@
             </DockPanel>
           </StackPanel>
         </Border>
-
       </StackPanel>
     </Border>
-
-
-
   </DockPanel>
 </UserControl>

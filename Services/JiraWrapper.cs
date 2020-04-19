@@ -41,7 +41,8 @@ namespace Sikor.Services
         {
             try
             {
-                if (tracking.To == default(DateTime)) {
+                if (tracking.To == default(DateTime))
+                {
                     tracking.To = DateTime.Now;
                 }
 
@@ -151,6 +152,8 @@ namespace Sikor.Services
                     item.Key = issue.Key.Value;
                     item.Value = issue.Summary;
                     item.Summary = issue.Summary;
+                    item.Type = issue.Type.Name;
+                    item.TimeSpent = issue.TimeTrackingData.TimeSpent;
                     issues.Add(item);
                     profile.Issues[item.Key] = item;
                 }
@@ -232,7 +235,8 @@ namespace Sikor.Services
                 throw new ArgumentException("Password and username must not be empty.");
             }
 
-            var profile = new Profile() {
+            var profile = new Profile()
+            {
                 Name = profileName,
                 Password = password,
                 Uri = url,
@@ -241,7 +245,8 @@ namespace Sikor.Services
 
             LoginState loginResult = await Login(profile);
 
-            if (loginResult == LoginState.SUCCESS) {
+            if (loginResult == LoginState.SUCCESS)
+            {
                 AppState.Profiles.Add(profile);
                 AppState.Profiles.Save();
 
@@ -255,7 +260,7 @@ namespace Sikor.Services
         async public Task<LoginState> Login(Profile profile)
         {
             //opens new connection
-            jira = Jira.CreateRestClient( profile.Uri, profile.Username, profile.Password);
+            jira = Jira.CreateRestClient(profile.Uri, profile.Username, profile.Password);
             jira.RestClient.RestSharpClient.Timeout = 3000;
             try
             {

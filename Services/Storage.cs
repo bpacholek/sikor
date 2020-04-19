@@ -29,7 +29,8 @@ namespace Sikor.Services
             if (Directory.Exists(storagePath))
             {
                 Folder = storagePath;
-            } else
+            }
+            else
             {
                 Folder = Directory.CreateDirectory(storagePath).FullName;
             }

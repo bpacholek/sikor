@@ -37,8 +37,11 @@
                   <TextBlock TextWrapping="Wrap" VerticalAlignment="Stretch" FontWeight="Bold" Text="{Binding Name}"></TextBlock>
                   <DockPanel HorizontalAlignment="Stretch">
                     <TextBlock DockPanel.Dock="Left" Foreground="#6c51a4" FontWeight="Bold" Text="{Binding Key}"></TextBlock>
-
                     <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Stretch" FontStyle="Italic" TextAlignment="Right" Text="{Binding Status}"></TextBlock>
+                  </DockPanel>
+                  <DockPanel HorizontalAlignment="Stretch">
+                    <TextBlock DockPanel.Dock="Left" HorizontalAlignment="Stretch" FontStyle="Italic" Text="{Binding TimeSpent}"></TextBlock>
+                    <TextBlock DockPanel.Dock="Right" FontStyle="Italic" TextAlignment="Right" Text="{Binding Type}"></TextBlock>
                   </DockPanel>
                 </StackPanel>
               </Border>

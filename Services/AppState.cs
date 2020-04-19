@@ -22,13 +22,14 @@ namespace Sikor.Services
 
         public Settings Settings;
 
+        public Profiles Profiles;
+
         public void SelectIssue(Issue issue)
         {
             ActiveProfile.SelectedIssue = issue;
             Operations.UpdateSelectionProperties();
         }
 
-        public Profiles Profiles;
 
         public override void PostInit()
         {
@@ -42,18 +43,24 @@ namespace Sikor.Services
             var storage = ServiceContainer.GetServiceTyped<Storage>(typeof(Storage).ToString());
 
             var settingsName = typeof(Settings).ToString();
-            if (storage.Has(settingsName)) {
+            if (storage.Has(settingsName))
+            {
                 Settings = storage.Get<Settings>(settingsName);
-            } else {
+            }
+            else
+            {
                 Settings = new Settings();
             }
 
             Settings.Init();
 
             var profilesName = typeof(Profiles).ToString();
-            if (storage.Has(profilesName)) {
+            if (storage.Has(profilesName))
+            {
                 Profiles = storage.Get<Profiles>(profilesName);
-            } else {
+            }
+            else
+            {
                 Profiles = new Profiles();
             }
 
@@ -69,7 +76,6 @@ namespace Sikor.Services
             Operations.PostInit();
             MainWindow.LoginFormVisible = false;
         }
-
 
     }
 }

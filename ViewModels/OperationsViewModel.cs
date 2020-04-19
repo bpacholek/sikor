@@ -239,11 +239,11 @@ namespace Sikor.ViewModels
             UpdateTrackingProperties();
         }
 
-        private void OpenMantis()
+        private void OpenGithub()
         {
             new Process
             {
-                StartInfo = new ProcessStartInfo(@"https://mantis.idct.pl/bug_report_page.php")
+                StartInfo = new ProcessStartInfo(@"https://github.com/ideaconnect/sikor/issues")
                 {
                     UseShellExecute = true
                 }

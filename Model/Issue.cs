@@ -67,6 +67,10 @@ namespace Sikor.Model
          */
         public string IssueKey => Key;
 
+        public string Type { get; set; }
+
+        public string TimeSpent { get; set; }
+
         /**
          * <summary>
          * Issue's summary (its name).

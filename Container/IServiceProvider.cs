@@ -21,8 +21,20 @@ namespace Sikor.Container
          */
         void Init();
 
+        /**
+         * <summary>
+         * Called whenever a manual initialization is required post any other
+         * init operations: for example when we need to load data from storage.
+         * </summary>
+         */
         void PostInit();
 
+        /**
+         * <summary>
+         * Returns the type as string.
+         * </summary>
+         * <returns></returns>
+         */
         string GetTypeString();
     }
 }

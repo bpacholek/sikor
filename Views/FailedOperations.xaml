@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor"
-             
+
              x:Class="Sikor.Views.FailedOperations">
   <UserControl.DataContext>
     <vm:FailedOperationsViewModel/>
@@ -15,7 +15,7 @@
       <Button HorizontalAlignment="Stretch">Delete</Button>
     </StackPanel>
     <ListBox DockPanel.Dock="Bottom" Items="{Binding FailedOperations}" SelectedItem="{Binding SelectedFailedOperation}">
-      
+
     </ListBox>
 
   </DockPanel>

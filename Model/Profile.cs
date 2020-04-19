@@ -102,9 +102,13 @@ namespace Sikor.Model
          * </summary>
          * <value>Boolean, true if profile is tracking time for an issue</value>
          */
-        public bool IsTracking { get {
-           return CurrentTracking != null;
-        } }
+        public bool IsTracking
+        {
+            get
+            {
+                return CurrentTracking != null;
+            }
+        }
 
         /**
          * <summary>
