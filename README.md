@@ -78,6 +78,7 @@ Roadmap
 # 0.3
 * Further cleanup of ViewModels in favor of AppState
 * More comments in existing classes
+* Automatic detection of a new version
 * Option to filter by Types
 
 # 0.4
