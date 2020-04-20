@@ -89,6 +89,7 @@ can race each other. Fix should involve cancellation of a previously created thr
 * "PM Token" feature which allows sending notifications to a project manager using a different channel (Slack, Mattermost etc.)
 * Profile edit screen
 * Worklog edit screen
+* Option to filter by Sprints
 
 # 0.5
 * Improved UI Reactivity: update of statuses on preview screens during changes
