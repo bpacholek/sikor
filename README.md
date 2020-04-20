@@ -75,6 +75,10 @@ Durining the development (until version 1.0) **SemVer** approach is not meant to
 Roadmap
 =======
 
+# 0.2.1
+* Search-race fix: currently each search triggers a new thread and potentially they
+can race each other. Fix should involve cancellation of a previously created thread.
+
 # 0.3
 * Further cleanup of ViewModels in favor of AppState
 * More comments in existing classes
