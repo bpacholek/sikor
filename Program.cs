@@ -53,15 +53,14 @@ namespace Sikor
 
                 service.PostInit();
             }
-
             lifetime.Start(args);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
                 .UseSkia()
-                .With(new AvaloniaNativePlatformOptions { UseGpu = false })
                 .LogToDebug()
                 .UseReactiveUI();
     }
