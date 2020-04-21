@@ -41,6 +41,7 @@ namespace Sikor
             Ui.SetupWithLifetime(lifetime);
             Sikor.Container.ServiceContainer.Init();
 
+
             //Ui.StartWithClassicDesktopLifetime(args);
             appState.PostInit();
 
@@ -53,6 +54,7 @@ namespace Sikor
 
                 service.PostInit();
             }
+
             lifetime.Start(args);
         }
 
@@ -61,9 +63,9 @@ namespace Sikor
             => AppBuilder.Configure<App>()
                 .LogToDebug()
                 .UsePlatformDetect()
-                .With(new X11PlatformOptions { UseGpu = false })
+                .With(new X11PlatformOptions { UseGpu = false, UseEGL = false })
                 .With(new AvaloniaNativePlatformOptions { UseGpu = false })
-                .With(new MacOSPlatformOptions { ShowInDock = false })
+                .With(new MacOSPlatformOptions { ShowInDock = true })
                 .With(new Win32PlatformOptions { UseDeferredRendering = false })
                 .UseReactiveUI();
     }
