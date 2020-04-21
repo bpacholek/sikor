@@ -37,6 +37,9 @@ dotnet publish Sikor.csproj --configuration Windows --framework netcoreapp3.1 --
 dotnet publish Sikor.csproj --configuration OSX --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
 ```
 
+If you receive `Unable to load the service index` error be sure to first execute:
+`export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0` in your shell.
+
 ### GNU/Linux x64
 ```
 dotnet publish Sikor.csproj --configuration Linux --framework netcoreapp3.1 --self-contained true --runtime linux-x64 /p:PublishSingleFile=true --output out
