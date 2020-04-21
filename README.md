@@ -101,6 +101,9 @@ can race each other. Fix should involve cancellation of a previously created thr
 * Feature-freeze and Unit Tests development
 
 # 0.8
+* Translations support
+
+# 0.9
 * Release Candidate
 
 Disclaimer

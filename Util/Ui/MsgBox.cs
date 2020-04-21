@@ -35,6 +35,11 @@ namespace Sikor.Util.Ui
                 ButtonDefinitions = buttons
             };
 
+            msgboxParams.Window.MaxWidth = 400;
+            msgboxParams.Window.MaxHeight = 400;
+            msgboxParams.Window.CanResize = false;
+            msgboxParams.Window.Title = title;
+
             return await MessageBoxManager.GetMessageBoxStandardWindow(msgboxParams).Show();
         }
     }
