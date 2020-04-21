@@ -60,7 +60,7 @@ namespace Sikor
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
-                .UseAvaloniaNative()
+                .UseSkia()
                 .With(new AvaloniaNativePlatformOptions { UseGpu = false })
                 .LogToDebug()
                 .UseReactiveUI();
