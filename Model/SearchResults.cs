@@ -8,6 +8,8 @@ namespace Sikor.Model
 
         public bool Offline { get; set; }
 
+        public bool Valid { get; set; }
+
         public SearchResults()
         {
             Offline = false;

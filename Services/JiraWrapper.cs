@@ -20,7 +20,6 @@ namespace Sikor.Services
         Jira jira;
 
         AppState AppState;
-
         public override void Init()
         {
             AppState = ServiceContainer.GetServiceTyped<AppState>(typeof(AppState).ToString());
@@ -130,7 +129,7 @@ namespace Sikor.Services
          * <param name="profile"></param>
          * <returns></returns>
          */
-        async public Task<SearchResults> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile)
+        async public Task<SearchResults> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile, AnonymousToken isValid)
         {
             try
             {
@@ -163,7 +162,8 @@ namespace Sikor.Services
                 var searchResults = new SearchResults()
                 {
                     Offline = false,
-                    Issues = issues
+                    Issues = issues,
+                    Valid = isValid.Valid
                 };
 
                 return searchResults;

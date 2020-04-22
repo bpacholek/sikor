@@ -1,6 +1,7 @@
 using MessageBox.Avalonia.Enums;
 using System.Threading.Tasks;
 using MessageBox.Avalonia;
+using Avalonia.Controls;
 
 namespace Sikor.Util.Ui
 {
@@ -23,7 +24,7 @@ namespace Sikor.Util.Ui
         * <param name="buttons">Buttons, defaults to only `Okay`.</param>
         * <returns>Result of the usage: informs which button was clicked.</returns>
         */
-        async public static Task<ButtonResult> Show(string title, string content, Icon type, ButtonEnum buttons = ButtonEnum.Ok)
+        async public static Task<ButtonResult> Show(string title, string content, Icon type = Icon.Info, ButtonEnum buttons = ButtonEnum.Ok)
         {
             var msgboxParams = new MessageBox.Avalonia.DTO.MessageBoxStandardParams()
             {
@@ -32,13 +33,14 @@ namespace Sikor.Util.Ui
                 ContentTitle = title,
                 ShowInCenter = true,
                 Icon = type,
-                ButtonDefinitions = buttons
+                ButtonDefinitions = buttons,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
 
-            msgboxParams.Window.MaxWidth = 400;
-            msgboxParams.Window.MaxHeight = 400;
+            var window = MessageBoxManager.GetMessageBoxStandardWindow(msgboxParams);
+            msgboxParams.Window.MaxHeight = 200;
             msgboxParams.Window.CanResize = false;
-            msgboxParams.Window.Title = title;
+            msgboxParams.Window.MaxWidth = 500;
 
             return await MessageBoxManager.GetMessageBoxStandardWindow(msgboxParams).Show();
         }

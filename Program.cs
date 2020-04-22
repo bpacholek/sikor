@@ -66,7 +66,7 @@ namespace Sikor
                 .With(new X11PlatformOptions { UseGpu = false, UseEGL = false })
                 .With(new AvaloniaNativePlatformOptions { UseGpu = false })
                 .With(new MacOSPlatformOptions { ShowInDock = true })
-                .With(new Win32PlatformOptions { UseDeferredRendering = false })
+                .With(new Win32PlatformOptions {  })
                 .UseReactiveUI();
     }
 }

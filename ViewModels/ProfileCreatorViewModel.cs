@@ -34,7 +34,7 @@ namespace Sikor.ViewModels
                         switch (r.Result)
                         {
                             case LoginState.SUCCESS:
-                                await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "New profile created successfully!", Icon.Success));
+                                await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "New profile created successfully!", Icon.Info));
                                 AppState.ProfileSelector.ReloadProfiles(); //TODO make a meta-method
                                 break;
                             case LoginState.INVALID_CREDENTIALS:

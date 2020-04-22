@@ -37,9 +37,6 @@ dotnet publish Sikor.csproj --configuration Windows --framework netcoreapp3.1 --
 dotnet publish Sikor.csproj --configuration OSX --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
 ```
 
-If you receive `Unable to load the service index` error be sure to first execute:
-`export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0` in your shell.
-
 ### GNU/Linux x64
 ```
 dotnet publish Sikor.csproj --configuration Linux --framework netcoreapp3.1 --self-contained true --runtime linux-x64 /p:PublishSingleFile=true --output out
@@ -77,10 +74,6 @@ Durining the development (until version 1.0) **SemVer** approach is not meant to
 
 Roadmap
 =======
-
-# 0.2.1
-* Search-race fix: currently each search triggers a new thread and potentially they
-can race each other. Fix should involve cancellation of a previously created thread.
 
 # 0.3
 * Further cleanup of ViewModels in favor of AppState

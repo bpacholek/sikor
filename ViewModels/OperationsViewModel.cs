@@ -82,7 +82,7 @@ namespace Sikor.ViewModels
                     {
                         if (r.Result == OperationResult.SAVED)
                         {
-                            await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Worklog successfully saved", Icon.Success, ButtonEnum.Ok));
+                            await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Worklog successfully saved", Icon.Info, ButtonEnum.Ok));
                         }
                         else
                         {
@@ -316,7 +316,7 @@ namespace Sikor.ViewModels
                     }
                     else
                     {
-                        await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Status successfully updated", Icon.Success, ButtonEnum.Ok));
+                        await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Status successfully updated", Icon.Info, ButtonEnum.Ok));
                         RemoveFailedStatus();
                     }
                     AppState.Loader.Hide();
@@ -356,7 +356,7 @@ namespace Sikor.ViewModels
                     {
                         if (OperationResult.SAVED == r.Result)
                         {
-                            await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Status successfully updated", Icon.Success, ButtonEnum.Ok));
+                            await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Status successfully updated", Icon.Info, ButtonEnum.Ok));
                         }
                         else
                         {
@@ -403,7 +403,7 @@ namespace Sikor.ViewModels
                     }
                     else
                     {
-                        await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Worklog successfully saved", Icon.Success, ButtonEnum.Ok));
+                        await Dispatcher.UIThread.InvokeAsync(async () => await MsgBox.Show("Success", "Worklog successfully saved", Icon.Info, ButtonEnum.Ok));
                         RemoveFailedWorklog();
                         UpdateWorklogProperties();
                     }

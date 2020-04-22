@@ -31,6 +31,7 @@ namespace Sikor.ViewModels
         public bool SearchOnlyCurrentUsersIssues { get; set; }
         public ObservableCollection<Issue> Issues { get; private set; }
 
+        protected AnonymousToken searchCancelToken;
         public Issue SelectedIssue
         {
             get
@@ -140,6 +141,11 @@ namespace Sikor.ViewModels
 
         public void Search()
         {
+            if (searchCancelToken != null)
+            {
+                searchCancelToken.Valid = false;
+            }
+
             var selectedStatuses = new List<string>();
             foreach (Status status in AppState.ActiveProfile.Statuses.Values)
             {
@@ -150,11 +156,17 @@ namespace Sikor.ViewModels
             }
             UpdateSearchProperties("Searching", "Searching");
 
-            _ = Task.Run(() => AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile).ContinueWith(
+            searchCancelToken = new AnonymousToken() {
+                Valid = true
+            };
+
+            _ = Task.Run(() => AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile, searchCancelToken).ContinueWith(
                 r =>
                 {
-                    Issues = r.Result.Issues;
-                    UpdateSearchProperties("Results", "Finished " + (r.Result.Offline ? "OFFLINE" : "ONLINE"));
+                    if (r.Result.Valid) {
+                        Issues = r.Result.Issues;
+                        UpdateSearchProperties("Results", "Finished " + (r.Result.Offline ? "OFFLINE" : "ONLINE"));
+                    }
                 }));
         }
 

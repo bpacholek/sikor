@@ -1,0 +1,1 @@
+dotnet publish Sikor.csproj --configuration OSX --framework netcoreapp3.1 --self-contained true --runtime osx-x64 /p:PublishSingleFile=true --output out
