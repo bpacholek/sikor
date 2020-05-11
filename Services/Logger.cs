@@ -22,6 +22,7 @@ namespace Sikor.Services
         public void Log(Object source, string location, string text)
         {
             LogFile.WriteLine("[" + DateTime.Now.ToString() + "] " + source.GetType().ToString() + ":" + location + ">" + text);
+            LogFile.Flush();
         }
         ~Logger()
         {

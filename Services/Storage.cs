@@ -75,8 +75,16 @@ namespace Sikor.Services
         {
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(Folder + Path.DirectorySeparatorChar + key, FileMode.Open, FileAccess.Read, FileShare.None);
-            T Object = (T)formatter.Deserialize(stream);
-            stream.Close();
+            T Object = default(T);
+
+            try {
+                Object = (T)formatter.Deserialize(stream);
+                stream.Close();
+            } catch (Exception e) {
+                var Logger = ServiceContainer.GetServiceTyped<Logger>(typeof(Logger).ToString());
+                Logger.Log(this, "Get", e.Message);
+                return default(T);
+            }
 
             return Object;
         }

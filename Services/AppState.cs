@@ -2,6 +2,7 @@ using Sikor.ViewModels;
 using Sikor.Container;
 using Sikor.Model;
 using Sikor.Repository;
+using System;
 
 namespace Sikor.Services
 {
@@ -59,6 +60,12 @@ namespace Sikor.Services
             if (storage.Has(profilesName))
             {
                 Profiles = storage.Get<Profiles>(profilesName);
+
+                if (Profiles == default(Profiles) || Profiles == null)
+                {
+                    Util.Ui.MsgBox.Show("Error", "Corrupted profiles file. This is a known bug and will be solved in 0.3; until that the only solution is to remove your profiles files and start again. If you continue then application will overwrite the profiles file for you.", MessageBox.Avalonia.Enums.Icon.Error, MessageBox.Avalonia.Enums.ButtonEnum.Ok);
+                    Profiles = new Profiles();
+                }
             }
             else
             {
