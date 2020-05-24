@@ -23,6 +23,9 @@ namespace Sikor.Model
         public bool ExcludeQA { get; set; }
 
         public List<string> Statuses;
+
+        public List<string> IssueTypes;
+
         public bool AssignedToCurrentUser { get; set; }
 
         public SearchSettings()
@@ -35,6 +38,7 @@ namespace Sikor.Model
             ExcludeResolved = false;
             ExcludeQA = false;
             Statuses = new List<string>();
+            IssueTypes = new List<string>();
         }
 
         public override string ToString()
@@ -71,6 +75,10 @@ namespace Sikor.Model
                 parameters.Add("status in (\"" + String.Join("\",\"", Statuses) + "\")");
             }
 
+            if (IssueTypes.Count > 0)
+            {
+                parameters.Add("issuetype in (\"" + String.Join("\",\"", IssueTypes) + "\")");
+            }
 
             string jql = string.Join(" && ", parameters);
 

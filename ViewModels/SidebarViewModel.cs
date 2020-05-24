@@ -28,6 +28,24 @@ namespace Sikor.ViewModels
             }
         }
 
+        public ObservableCollection<IssueType> IssueTypes
+        {
+            get
+            {
+                if (AppState.ActiveProfile == null)
+                {
+                    return null;
+                }
+                var types = new ObservableCollection<IssueType>();
+                foreach (IssueType issueType in AppState.ActiveProfile.IssueTypes.Values)
+                {
+                    types.Add(issueType);
+                }
+
+                return types;
+            }
+        }
+
         public bool SearchOnlyCurrentUsersIssues { get; set; }
         public ObservableCollection<Issue> Issues { get; private set; }
 
@@ -154,13 +172,22 @@ namespace Sikor.ViewModels
                     selectedStatuses.Add(status.Key);
                 }
             }
+
+            var selectedIssueTypes = new List<string>();
+            foreach (IssueType issueType in AppState.ActiveProfile.IssueTypes.Values)
+            {
+                if (issueType.Selected)
+                {
+                    selectedIssueTypes.Add(issueType.Key);
+                }
+            }
             UpdateSearchProperties("Searching", "Searching");
 
             searchCancelToken = new AnonymousToken() {
                 Valid = true
             };
 
-            _ = Task.Run(() => AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, AppState.ActiveProfile, searchCancelToken).ContinueWith(
+            _ = Task.Run(() => AppState.Jira.Search(searchString, SelectedSorting.Key, SearchOnlyCurrentUsersIssues, SelectedProject.Key != "-1" ? SelectedProject.Key : "", selectedStatuses, selectedIssueTypes, AppState.ActiveProfile, searchCancelToken).ContinueWith(
                 r =>
                 {
                     if (r.Result.Valid) {
@@ -193,6 +220,8 @@ namespace Sikor.ViewModels
             this.RaisePropertyChanged("Projects");
             this.RaisePropertyChanged("SelectedProject");
             this.RaisePropertyChanged("Statuses");
+            this.RaisePropertyChanged("IssueTypes");
+
         }
     }
 }

@@ -54,7 +54,7 @@ The project is currently developed in a Rapid-Application-Development mode, whic
 
 Whenever you experience a problem please file an **Issue** using GitHub's interface, when you have a code improvement then please create a **Pull Request** from a branch which has a descriptive name (never try to merge from `master` to `master`).
 
-### Two words on the structure
+### Two words about the structure
 
 I have tried to mimic the structure of popular web-frameworks as much as possible to allow easier development for developers coming from that background. Shared elements are stored under `Services` namespace while models of temporary entities are in `Models`. `Program.cs` acts as a boostrap.
 
@@ -79,7 +79,7 @@ Roadmap
 * Further cleanup of ViewModels in favor of AppState
 * More comments in existing classes
 * Automatic detection of a new version
-* Option to filter by Types
+* ~~Option to filter by Types~~ (done in 0.2.4)
 
 # 0.4
 * "PM Token" feature which allows sending notifications to a project manager using a different channel (Slack, Mattermost etc.)

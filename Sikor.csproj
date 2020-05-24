@@ -3,14 +3,14 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SignAssembly>false</SignAssembly>
-    <Version>0.2.3</Version>
+    <Version>0.2.4</Version>
     <Authors>IDCT Bartosz Pachołek</Authors>
     <PackageProjectUrl>https://idct.pl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ideaconnect/sikor</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>jira, chronos, timetracker, timetracking, project management, time</PackageTags>
-    <FileVersion>0.2.3.0</FileVersion>
-    <AssemblyVersion>0.2.3.0</AssemblyVersion>
+    <FileVersion>0.2.4.0</FileVersion>
+    <AssemblyVersion>0.2.4.0</AssemblyVersion>
     <Copyright>IDCT Bartosz Pachołek</Copyright>
     <PackageLicenseExpression>GNU General Public License v3.0</PackageLicenseExpression>
     <ApplicationIcon>Assets\violet.ico</ApplicationIcon>
@@ -44,7 +44,7 @@
     <PackageReference Include="Avalonia.Win32" Version="0.9.10" />
     <PackageReference Include="Avalonia.X11" Version="0.9.10" />
     <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
-    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\ProfileSelector.xaml">

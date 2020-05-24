@@ -15,15 +15,27 @@
         </CheckBox>
         <ComboBox DockPanel.Dock="Top" Padding="4" Name="SortOptions" Background="#ffffff" SelectedItem="{Binding SelectedSorting}" Items="{Binding SortOptions}">
         </ComboBox>
-        <ListBox DockPanel.Dock="Top" Name="IssueStatuses" Items="{Binding Statuses, Mode=TwoWay}">
-          <ListBox.ItemTemplate>
-            <DataTemplate SupportsRecycling="True">
-              <CheckBox DockPanel.Dock="Top" Content="{Binding Path=Item.Selected}" IsChecked="{Binding Selected, Mode=TwoWay}">
-                <TextBlock Text="{Binding Name}"></TextBlock>
-              </CheckBox>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid ColumnDefinitions="*, *" RowDefinitions="*" DockPanel.Dock="Top">
+          <ListBox Grid.Column="0" Grid.Row="0" Name="IssueStatuses" Items="{Binding Statuses, Mode=TwoWay}">
+              <ListBox.ItemTemplate>
+                <DataTemplate SupportsRecycling="True">
+                  <CheckBox  Content="{Binding Path=Item.Selected}" IsChecked="{Binding Selected, Mode=TwoWay}">
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                  </CheckBox>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <ListBox Grid.Column="1" Grid.Row="0"  Name="IssueTypes" Items="{Binding IssueTypes, Mode=TwoWay}">
+              <ListBox.ItemTemplate>
+                <DataTemplate SupportsRecycling="True">
+                  <CheckBox  Content="{Binding Path=Item.Selected}" IsChecked="{Binding Selected, Mode=TwoWay}">
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                  </CheckBox>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
         <Grid ColumnDefinitions="*, 40" RowDefinitions="*, 20" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
           <TextBox Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Text="{Binding IssueSearchText, Mode=TwoWay}"></TextBox>
           <Button Grid.Column="1" Grid.Row="0" Width="40" Command="{Binding Search}">

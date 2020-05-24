@@ -7,6 +7,7 @@ using JiraIssue = Atlassian.Jira.Issue;
 using JiraStatus = Atlassian.Jira.IssueStatus;
 using JiraProject = Atlassian.Jira.Project;
 using JiraWorklog = Atlassian.Jira.Worklog;
+using JiraIssueType = Atlassian.Jira.IssueType;
 using Sikor.Model;
 using System.Security.Authentication;
 using Sikor.Enum;
@@ -129,7 +130,7 @@ namespace Sikor.Services
          * <param name="profile"></param>
          * <returns></returns>
          */
-        async public Task<SearchResults> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, Profile profile, AnonymousToken isValid)
+        async public Task<SearchResults> Search(string searchText, string sorting, bool onlyCurrentUser, string projectKey, List<string> statuses, List<string> issueTypes, Profile profile, AnonymousToken isValid)
         {
             try
             {
@@ -139,7 +140,8 @@ namespace Sikor.Services
                     Sorting = sorting,
                     AssignedToCurrentUser = onlyCurrentUser,
                     Project = projectKey,
-                    Statuses = statuses
+                    Statuses = statuses,
+                    IssueTypes = issueTypes
                 };
 
                 var results = await jira.Issues.GetIssuesFromJqlAsync(SearchParams.ToString());
@@ -154,10 +156,14 @@ namespace Sikor.Services
                     item.Value = issue.Summary;
                     item.Summary = issue.Summary;
                     item.Type = issue.Type.Name;
+                    item.TypeId = issue.Type.Id;
                     item.TimeSpent = issue.TimeTrackingData.TimeSpent;
                     issues.Add(item);
                     profile.Issues[item.Key] = item;
                 }
+
+                //save profile
+                AppState.Profiles.Save();
 
                 var searchResults = new SearchResults()
                 {
@@ -190,15 +196,20 @@ namespace Sikor.Services
                         continue;
                     }
 
+                    if (issueTypes.Count > 0 && !issueTypes.Contains(item.TypeId))
+                    {
+                        continue;
+                    }
+
                     issues.Add(item);
                 }
 
                 var searchResults = new SearchResults()
                 {
                     Offline = true,
-                    Issues = issues
+                    Issues = issues,
+                    Valid = isValid.Valid
                 };
-
 
                 return searchResults;
             }
@@ -262,6 +273,7 @@ namespace Sikor.Services
 
         async public Task<LoginState> Login(Profile profile)
         {
+            profile.LoginInit();
             //opens new connection
             jira = Jira.CreateRestClient(profile.Uri, profile.Username, profile.Password);
             jira.RestClient.RestSharpClient.Timeout = 3000;
@@ -287,6 +299,16 @@ namespace Sikor.Services
                     issueStatusItem.Key = status.Name;
                     issueStatusItem.Value = status.Name;
                     profile.Statuses.Add(status.Id, issueStatusItem);
+                }
+
+                var types = await jira.IssueTypes.GetIssueTypesAsync();
+                profile.IssueTypes.Clear();
+                foreach (JiraIssueType issueType in types)
+                {
+                    var issueTypeItem = new IssueType();
+                    issueTypeItem.Key = issueType.Id;
+                    issueTypeItem.Value = issueType.Name;
+                    profile.IssueTypes.Add( issueType.Id, issueTypeItem);
                 }
             }
             catch (AuthenticationException e)

@@ -69,6 +69,9 @@ namespace Sikor.Model
 
         public string Type { get; set; }
 
+        public string TypeId { get; set; }
+
+
         public string TimeSpent { get; set; }
 
         /**

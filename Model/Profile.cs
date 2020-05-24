@@ -81,6 +81,17 @@ namespace Sikor.Model
 
         /**
          * <summary>
+         * Cached list of issue types.
+         * </summary>
+         * <todo>
+         * Verify if key is always numerical
+         * </todo>
+         * <value>Dictionary of Statuses by their Jira keys (usually numerical)</value>
+         */
+        public Dictionary<string, IssueType> IssueTypes { get; set; }
+
+        /**
+         * <summary>
          * List of statuses which were not saved due to some issues: allows to
          * save them again after solving the problem (network, credentials etc.)
          * </summary>
@@ -129,6 +140,14 @@ namespace Sikor.Model
             Statuses = new Dictionary<string, Status>();
             FailedStatusUpdates = new List<FailedStatusUpdate>();
             FailedWorklogs = new List<Tracking>();
+            IssueTypes = new Dictionary<string, IssueType>();
+        }
+
+        public void LoginInit()
+        {
+            if (IssueTypes == null) {
+                IssueTypes = new Dictionary<string, IssueType>();
+            }
         }
 
         /**
