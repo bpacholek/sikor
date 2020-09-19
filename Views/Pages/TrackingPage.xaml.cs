@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Sikor.Views
+namespace Sikor.Views.Pages
 {
-    public class FullLoader : UserControl
+    public class TrackingPage : UserControl
     {
-        public FullLoader()
+        public TrackingPage()
         {
             this.InitializeComponent();
         }

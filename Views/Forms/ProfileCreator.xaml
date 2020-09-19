@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Sikor.ViewModels.Forms;assembly=Sikor" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="Sikor.Views.Forms.ProfileCreator">
+    <UserControl.DataContext>
+        <vm:ProfileCreatorViewModel/>
+    </UserControl.DataContext>
+    <Border Classes="formbox bgaccent">
+        <StackPanel>
+            <Border Classes="header">
+                <TextBlock>Create new profile</TextBlock>
+            </Border>
+            <Grid ColumnDefinitions="100, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="0">
+                <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" />
+                <TextBlock Text="URL:" Grid.Row="1" Grid.Column="0" />
+                <TextBlock Text="Username:" Grid.Row="2" Grid.Column="0"/>
+                <TextBlock Text="Password:" Grid.Row="3" Grid.Column="0" />
+                <TextBlock Text="LiveTracker ID:" Grid.Row="4" Grid.Column="0" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProfileLoginDetails.ProfileName, Mode=TwoWay}"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ProfileLoginDetails.Url, Mode=TwoWay}"></TextBox>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ProfileLoginDetails.Username, Mode=TwoWay}"></TextBox>
+                <TextBox PasswordChar="*" Grid.Row="3" Grid.Column="1" Text="{Binding ProfileLoginDetails.Password, Mode=TwoWay}"></TextBox>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding ProfileLoginDetails.LiveTrackerId, Mode=TwoWay}"></TextBox>
+            </Grid>
+            <Button Command="{Binding TestAndSave}" Content="Test and save..."></Button>
+        </StackPanel>
+    </Border>
+</UserControl>

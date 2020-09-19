@@ -9,10 +9,18 @@ using Sikor.Container;
 using Sikor.Enum;
 using Avalonia.Threading;
 
-namespace Sikor.ViewModels
+namespace Sikor.ViewModels.Forms
 {
     public class ProfileSelectorViewModel : ReactiveViewServiceProvider
     {
+        protected string classProfileSelector = "bgaccent";
+
+        public string ClassProfileSelector
+        {
+            get => classProfileSelector;
+            set => this.RaiseAndSetIfChanged(ref classProfileSelector, value);
+        }
+
         public ObservableCollection<ListableItem> ProfileItems
         {
             get

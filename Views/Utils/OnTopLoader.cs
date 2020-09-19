@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Sikor.Views
+namespace Sikor.Views.Utils
 {
-    public class ProfileCreator : UserControl
+    public class OnTopLoader : UserControl
     {
-        public ProfileCreator()
+        public OnTopLoader()
         {
             this.InitializeComponent();
         }

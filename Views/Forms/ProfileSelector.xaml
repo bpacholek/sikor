@@ -2,17 +2,19 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="Sikor.Views.ProfileSelector">
+  xmlns:vm="clr-namespace:Sikor.ViewModels.Forms;assembly=Sikor" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="Sikor.Views.Forms.ProfileSelector">
   <UserControl.DataContext>
     <vm:ProfileSelectorViewModel/>
   </UserControl.DataContext>
-  <Border Classes="bgaccent" BorderBrush="Black" BorderThickness="1" CornerRadius="4" Padding="4">
-    <StackPanel Width="200">
-      <TextBlock Classes="header">Select profile</TextBlock>
-      <ComboBox Background="#ffffff" Items="{Binding ProfileItems}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" Name="ProfileItems">
+  <Border Classes="bgaccent formbox">
+    <StackPanel>
+      <Border Classes="header">
+          <TextBlock>Select profile</TextBlock>
+      </Border>
+      <ComboBox Items="{Binding ProfileItems}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" Name="ProfileItems">
         <ComboBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Name}"></TextBlock>
+            <TextBlock Classes="Black" Text="{Binding Name}"/>
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>

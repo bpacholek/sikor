@@ -1,9 +1,9 @@
 using ReactiveUI;
 using Sikor.Container;
 
-namespace Sikor.ViewModels
+namespace Sikor.ViewModels.Utils
 {
-    public class FullLoaderViewModel : ReactiveViewServiceProvider
+    public class OnTopLoaderViewModel : ReactiveViewServiceProvider
     {
         protected bool loaderVisible = false;
 

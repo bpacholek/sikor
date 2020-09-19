@@ -1,4 +1,7 @@
 using Sikor.ViewModels;
+using Sikor.ViewModels.Utils;
+using Sikor.ViewModels.Forms;
+
 using Sikor.Container;
 using Sikor.Model;
 using Sikor.Repository;
@@ -14,7 +17,7 @@ namespace Sikor.Services
         public OperationsViewModel Operations { get; private set; }
 
         public ProfileSelectorViewModel ProfileSelector { get; private set; }
-        public FullLoaderViewModel Loader { get; private set; }
+        public OnTopLoaderViewModel Loader { get; private set; }
 
         public JiraWrapper Jira { get; private set; }
         #endregion
@@ -39,7 +42,7 @@ namespace Sikor.Services
             Sidebar = ServiceContainer.GetServiceTyped<SidebarViewModel>(typeof(SidebarViewModel).ToString());
             Logger = ServiceContainer.GetServiceTyped<Logger>(typeof(Logger).ToString());
             Operations = ServiceContainer.GetServiceTyped<OperationsViewModel>(typeof(OperationsViewModel).ToString());
-            Loader = ServiceContainer.GetServiceTyped<FullLoaderViewModel>(typeof(FullLoaderViewModel).ToString());
+            Loader = ServiceContainer.GetServiceTyped<OnTopLoaderViewModel>(typeof(OnTopLoaderViewModel).ToString());
             ProfileSelector = ServiceContainer.GetServiceTyped<ProfileSelectorViewModel>(typeof(ProfileSelectorViewModel).ToString());
             Jira = ServiceContainer.GetServiceTyped<JiraWrapper>(typeof(JiraWrapper).ToString());
             var storage = ServiceContainer.GetServiceTyped<Storage>(typeof(Storage).ToString());
@@ -75,6 +78,7 @@ namespace Sikor.Services
             Profiles.Init();
 
             ProfileSelector.ReloadProfiles();
+            MainWindow.LogoOpacity = 1;
         }
 
         public void Login(Profile profile)
@@ -82,7 +86,7 @@ namespace Sikor.Services
             ActiveProfile = profile;
             Sidebar.PostInit();
             Operations.PostInit();
-            MainWindow.LoginFormVisible = false;
+            MainWindow.LoginPageVisible = false;
         }
 
     }

@@ -1,16 +1,34 @@
 using ReactiveUI;
 using System.Reflection;
 using Sikor.Container;
+using System.Collections.Generic;
 
 namespace Sikor.ViewModels
 {
     public class MainWindowViewModel : ReactiveViewServiceProvider
     {
-        protected bool loginFormVisible = true;
-        public bool LoginFormVisible
+        protected bool loginPageVisible = true;
+
+        protected bool trackingPageVisible = false;
+
+
+        protected float logoOpacity = 0;
+
+        public float LogoOpacity
         {
-            get => loginFormVisible;
-            set => this.RaiseAndSetIfChanged(ref loginFormVisible, value);
+            get => logoOpacity;
+            set => this.RaiseAndSetIfChanged(ref logoOpacity, value);
+        }
+        public bool LoginPageVisible
+        {
+            get => loginPageVisible;
+            set => this.RaiseAndSetIfChanged(ref loginPageVisible, value);
+        }
+
+        public bool TrackingPageVisible
+        {
+            get => trackingPageVisible;
+            set => this.RaiseAndSetIfChanged(ref trackingPageVisible, value);
         }
 
         public string Version

@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Sikor.Views
+namespace Sikor.Views.Forms
 {
     public class ProfileSelector : UserControl
     {

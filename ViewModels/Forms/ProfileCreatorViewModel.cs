@@ -5,24 +5,19 @@ using Sikor.Container;
 using Sikor.Util.Ui;
 using Sikor.Enum;
 using Avalonia.Threading;
+using sikor.Model;
 
-namespace Sikor.ViewModels
+namespace Sikor.ViewModels.Forms
 {
     public class ProfileCreatorViewModel : ReactiveViewServiceProvider
     {
-        public string Url { get; set; }
-
-        public string ProfileName { get; set; }
-
-        public string Username { get; set; }
-
-        public string Password { get; set; }
+        public ProfileLoginDetails ProfileLoginDetails { get; private set; }
 
         public void TestAndSave()
         {
             AppState.Loader.Show();
 
-            _ = Task.Run(() => AppState.Jira.CreateProfile(ProfileName, Url, Username, Password)).ContinueWith(
+            _ = Task.Run(() => AppState.Jira.CreateProfile(ProfileLoginDetails.ProfileName, ProfileLoginDetails.Url, ProfileLoginDetails.Username, ProfileLoginDetails.Password)).ContinueWith(
                 async r =>
                 {
                     if (r.IsFaulted)
@@ -51,10 +46,7 @@ namespace Sikor.ViewModels
 
         public ProfileCreatorViewModel()
         {
-            Url = "";
-            Username = "";
-            ProfileName = "";
-            Password = "";
+            ProfileLoginDetails = new ProfileLoginDetails();
         }
     }
 }

@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Sikor.ViewModels;
-using Sikor.Views;
+using Sikor.Views.Windows;
 
 namespace Sikor
 {

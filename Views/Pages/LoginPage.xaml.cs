@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Sikor.Views
+namespace Sikor.Views.Pages
 {
-    public class LoginForm : UserControl
+    public class LoginPage : UserControl
     {
-        public LoginForm()
+        public LoginPage()
         {
             this.InitializeComponent();
         }
