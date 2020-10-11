@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SignAssembly>false</SignAssembly>
-    <Version>0.2.4</Version>
+    <Version>0.2.5</Version>
     <Authors>IDCT Bartosz Pachołek</Authors>
     <PackageProjectUrl>https://idct.pl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ideaconnect/sikor</RepositoryUrl>

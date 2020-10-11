@@ -6,14 +6,37 @@
     xmlns:forms="clr-namespace:Sikor.Views.Forms"
     xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor" d:DesignHeight="450" x:Class="Sikor.Views.Pages.LoginPage">
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Image Name="LogoImage" Classes="LogoImage" Source="avares://Sikor/Assets/timer-outline.png" Width="64" Height="64" VerticalAlignment="Top" />
-        <TextBlock Text="Sikor" FontFamily="OpenSans" HorizontalAlignment="Center" FontSize="32" />
-        <forms:ProfileSelector/>
-        <forms:ProfileCreator/>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock>Version: </TextBlock>
-            <TextBlock Text="{Binding Version}"></TextBlock>
-        </StackPanel>
-    </StackPanel>
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <DockPanel.Background>
+            <ImageBrush Source="avares://Sikor/Assets/pexels-andrea-piacquadio-3760810.jpg" Stretch="UniformToFill"/>
+        </DockPanel.Background>
+        <Panel HorizontalAlignment="Left">
+            <Panel.Background>
+                <SolidColorBrush Color="#FFFFFF"/>
+            </Panel.Background>
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10">
+                <Image Name="LogoImage" Classes="LogoImage" Source="avares://Sikor/Assets/timer-outline.png" Width="64" Height="64" VerticalAlignment="Top" />
+                <TextBlock Text="Sikor" FontFamily="OpenSans" HorizontalAlignment="Center" FontSize="32" />
+                <forms:ProfileSelector/>
+                <forms:ProfileCreator/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Version: </TextBlock>
+                    <TextBlock Text="{Binding Version}"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Latest: </TextBlock>
+                    <TextBlock Text="{Binding LatestVersion}"></TextBlock>
+                    <Button IsVisible="{Binding UpdateVisible}" Command="{Binding OpenUpdate}">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <TextBlock Classes="Link" Text=" [update]"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+                <Image Name="IdctLogo" Margin="0 25 0 0" Classes="LogoImage" Source="avares://Sikor/Assets/idct_logo.png" Height="64" VerticalAlignment="Bottom" />
+            </StackPanel>
+        </Panel>
+    </DockPanel>
+
 </UserControl>

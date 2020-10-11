@@ -16,6 +16,7 @@
     <Style Selector="Border.bgaccent">
       <Setter Property="Background" Value="#6c51a4"/>
     </Style>
+
     <Style Selector="Border.formbox">
       <Setter Property="BorderBrush" Value="Black"/>
       <Setter Property="BorderThickness" Value="1"/>
@@ -26,11 +27,25 @@
     <Style Selector="Border.formbox > StackPanel">
       <Setter Property="Width" Value="300"/>
     </Style>
+    <Style Selector="Border.formbox > Grid">
+      <Setter Property="Width" Value="300"/>
+    </Style>
+    <Style Selector="Border.formbox > ComboBox">
+      <Setter Property="Width" Value="300"/>
+    </Style>
     <Style Selector="Border.formbox Grid TextBlock">
       <Setter Property="FontSize" Value="14"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="FontWeight" Value="Normal"/>
       <Setter Property="Foreground" Value="#ffffff"/>
+    </Style>
+    <Style Selector="TextBlock.Link">
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    <Style Selector="TextBlock.Link:pointerover">
+      <Setter Property="Foreground" Value="#6c51a4"/>
+      <Setter Property="Cursor" Value="9"/>
+
     </Style>
     <Style Selector="Border.formbox Button">
         <Setter Property="Margin" Value="0 2 0 0"/>

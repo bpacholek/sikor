@@ -5,7 +5,7 @@
     xmlns:views="clr-namespace:Sikor.Views" d:DesignWidth="800"
     xmlns:vm="clr-namespace:Sikor.ViewModels;assembly=Sikor" d:DesignHeight="450" x:Class="Sikor.Views.Pages.TrackingPage">
 
-    <Grid ColumnDefinitions="300,*" RowDefinitions="*" VerticalAlignment="Stretch" Background="#ffffff" HorizontalAlignment="Stretch">
+    <Grid ColumnDefinitions="400,*" RowDefinitions="*" VerticalAlignment="Stretch" Background="#ffffff" HorizontalAlignment="Stretch">
       <views:Sidebar Grid.Column="0" Grid.Row="0"></views:Sidebar>
       <views:TabbedView Grid.Column="1" Grid.Row="0"></views:TabbedView>
     </Grid>

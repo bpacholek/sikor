@@ -156,7 +156,18 @@
             </DockPanel>
           </StackPanel>
         </Border>
-        <Border Margin="0 5 0 0" Classes="bgaccent" BorderBrush="Black" BorderThickness="1" Padding="4">
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right" >
+            <Button Command="{Binding OpenGithub}" Margin="0 5 0 5">
+                <Button.Template>
+                    <ControlTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="Link" Text="Found a bug?" VerticalAlignment="Center" Height="24"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+        <!-- <Border Margin="0 5 0 0" Classes="bgaccent" BorderBrush="Black" BorderThickness="1" Padding="4">
           <StackPanel Orientation="Vertical" Background="#ffffff">
             <TextBlock Classes="header" Background="#6c51a4" HorizontalAlignment="Stretch">Information</TextBlock>
             <DockPanel LastChildFill="True">
@@ -172,14 +183,14 @@
                 <Button Grid.Column="3" Grid.Row="0" Command="{Binding OpenGithub}">
                   <StackPanel Orientation="Vertical">
                     <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Found a bug?</TextBlock>
-                    <Image HorizontalAlignment="Center" Source="avares://Sikor/Assets/github-brands.png" Width="24" Height="24" Margin="5"></Image>
+
                     <TextBlock HorizontalAlignment="Center" TextAlignment="Center">Report it on GitHub</TextBlock>
                   </StackPanel>
                 </Button>
               </Grid>
             </DockPanel>
           </StackPanel>
-        </Border>
+        </Border> -->
       </StackPanel>
     </Border>
   </DockPanel>

@@ -28,6 +28,7 @@ namespace Sikor
                 new Storage(),
                 new Logger(),
                 new JiraWrapper(),
+                new Updater(),
                 appState
             };
 

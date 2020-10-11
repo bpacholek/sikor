@@ -87,6 +87,7 @@ namespace Sikor.Services
             Sidebar.PostInit();
             Operations.PostInit();
             MainWindow.LoginPageVisible = false;
+            MainWindow.TrackingPageVisible  = true;
         }
 
     }
