@@ -11,15 +11,24 @@
       <Border Classes="header">
           <TextBlock>Select profile</TextBlock>
       </Border>
-      <ComboBox Items="{Binding ProfileItems}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" Name="ProfileItems">
+      <ComboBox Margin="2" Items="{Binding ProfileItems}" SelectedItem="{Binding SelectedProfile, Mode=TwoWay}" Name="ProfileItems">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Classes="Black" Text="{Binding Name}"/>
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
-      <Button Command="{Binding LoginAttempt}">Login</Button>
-      <Button Command="{Binding DeleteSelected}">Remove</Button>
+      <Grid ColumnDefinitions="52,52,*" RowDefinitions="*" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Button Command="{Binding DeleteSelected}" ToolTip.Tip="Delete selected profile" Grid.Row="0" Grid.Column="0" Margin="2">
+                <Image Source="avares://Sikor/Assets/Icons/delete_forever-24px.png" Width="24" Height="24" Margin="2"></Image>
+            </Button>
+            <Button Command="{Binding DeleteSelected}" ToolTip.Tip="Edit selected profile" Grid.Row="0" Grid.Column="1" Margin="2">
+                <Image Source="avares://Sikor/Assets/Icons/edit-black-48dp.png" Width="24" Height="24" Margin="2"></Image>
+            </Button>
+            <Button Command="{Binding LoginAttempt}" ToolTip.Tip="Attempt to sign in" Grid.Row="0" Grid.Column="2" Margin="2">
+                <Image Source="avares://Sikor/Assets/Icons/login-black-48dp.png" Width="24" Height="24" Margin="2"></Image>
+            </Button>
+      </Grid>
     </StackPanel>
   </Border>
 </UserControl>
